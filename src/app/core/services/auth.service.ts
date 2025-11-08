@@ -28,8 +28,8 @@ export class AuthService {
     this.loadAuthData();
   }
 
-  // POST - Login (con objeto)
-  loginWithCredentials(credentials: LoginRequest): Observable<AuthResponse> {
+  // POST - Login
+  login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         this.saveAuthData(response);
@@ -37,23 +37,13 @@ export class AuthService {
     );
   }
 
-  // POST - Login (con parámetros separados)
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.loginWithCredentials({ email, password });
-  }
-
-  // POST - Register (con objeto)
-  registerWithData(data: RegisterRequest): Observable<AuthResponse> {
+  // POST - Register
+  register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
       tap(response => {
         this.saveAuthData(response);
       })
     );
-  }
-
-  // POST - Register (con parámetros separados)
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.registerWithData({ name, email, password });
   }
 
   // Logout

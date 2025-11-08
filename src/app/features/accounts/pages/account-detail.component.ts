@@ -59,7 +59,7 @@ import { TransactionResponse } from '@core/models/transaction.model';
   `,
   styles: [`
     .account-detail-container {
-      padding: 2rem;
+      padding: var(--spacing-xl);
       max-width: 800px;
       margin: 0 auto;
     }
@@ -67,66 +67,66 @@ import { TransactionResponse } from '@core/models/transaction.model';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 2rem;
-      background: white;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: var(--spacing-xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
+      margin-bottom: var(--spacing-xl);
+      box-shadow: var(--shadow-sm);
     }
     .account-type {
-      color: #6c757d;
+      color: var(--color-text-secondary);
       text-transform: uppercase;
-      font-size: 0.875rem;
+      font-size: var(--font-size-sm);
     }
     .balance {
       text-align: right;
     }
     .balance .label {
       display: block;
-      color: #6c757d;
-      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
     }
     .balance .amount {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #28a745;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-success);
     }
     .actions {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
     }
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem var(--spacing-lg);
+      border-radius: var(--border-radius-sm);
       text-decoration: none;
-      font-weight: 500;
-      color: white;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-light);
     }
     .btn-success {
-      background: #28a745;
+      background: var(--color-success);
     }
     .btn-warning {
-      background: #ffc107;
-      color: #000;
+      background: var(--color-warning);
+      color: var(--color-text-primary);
     }
     .btn-secondary {
-      background: #6c757d;
+      background: var(--color-gray);
     }
     .transactions-section {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: var(--color-background-light);
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     .transactions-list {
-      margin-top: 1rem;
+      margin-top: var(--spacing-md);
     }
     .transaction-item {
       display: flex;
       justify-content: space-between;
-      padding: 1rem;
-      border-bottom: 1px solid #eee;
+      padding: var(--spacing-md);
+      border-bottom: 1px solid var(--color-border-light);
     }
     .transaction-item:last-child {
       border-bottom: none;
@@ -136,22 +136,22 @@ import { TransactionResponse } from '@core/models/transaction.model';
       flex-direction: column;
     }
     .tx-type {
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
       text-transform: capitalize;
     }
     .tx-date {
-      font-size: 0.875rem;
-      color: #6c757d;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
     }
     .tx-amount {
-      font-size: 1.25rem;
-      font-weight: bold;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
     }
     .tx-amount.positive {
-      color: #28a745;
+      color: var(--color-success);
     }
     .tx-amount.negative {
-      color: #dc3545;
+      color: var(--color-danger);
     }
     .empty {
       text-align: center;
@@ -172,9 +172,10 @@ export class AccountDetailComponent implements OnInit {
 
   ngOnInit() {
     const accountId = this.route.snapshot.paramMap.get('id');
+    
 
     if (accountId) {
-      this.accountService.getAccountById(accountId).subscribe({
+      this.accountService.getById(accountId).subscribe({
         next: (data) => {
           this.account.set(data);
           this.loadTransactions(accountId);
@@ -186,8 +187,8 @@ export class AccountDetailComponent implements OnInit {
     }
   }
 
-  private loadTransactions(accountId: string) {
-    this.transactionService.getTransactionsByAccount(accountId).subscribe({
+  private loadTransactions(id: string) {
+    this.transactionService.getByAccountId(id).subscribe({
       next: (data) => {
         this.transactions.set(data);
         this.loading.set(false);

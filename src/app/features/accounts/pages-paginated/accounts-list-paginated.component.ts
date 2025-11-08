@@ -4,15 +4,16 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AccountService } from '@core/services/account.service';
 import { AccountResponse } from '@core/models/account.model';
+import { Page, PageRequest } from '@core/models/page.model';
 
 @Component({
-  selector: 'app-account-list',
+  selector: 'app-accounts-list-paginated',
   standalone: true,
   imports: [CommonModule, RouterLink, ReactiveFormsModule],
   template: `
-    <div class="account-list-container">
-      <div class="header">
-        <h2>Mis Cuentas</h2>
+    <div class="accounts-container">
+      <div class="accounts-header">
+        <h2>Mis Cuentas (Paginado)</h2>
         <a routerLink="/accounts/create" class="btn btn-primary">+ Nueva Cuenta</a>
       </div>
 
@@ -31,14 +32,9 @@ import { AccountResponse } from '@core/models/account.model';
 
       @if (loading()) {
         <p>Cargando cuentas...</p>
-      } @else if (accounts().length === 0) {
-        <div class="empty-state">
-          <p>No tienes cuentas registradas</p>
-          <a routerLink="/accounts/create" class="btn btn-secondary">Crear primera cuenta</a>
-        </div>
-      } @else {
+      } @else if (page()) {
         <div class="accounts-grid">
-          @for (account of accounts(); track account.id) {
+          @for (account of page()!.content; track account.id) {
             <div class="account-card">
               <div class="account-info">
                 <h3>{{ account.accountNumber }}</h3>
@@ -54,16 +50,39 @@ import { AccountResponse } from '@core/models/account.model';
             </div>
           }
         </div>
+
+        <div class="pagination">
+          <button
+            class="btn-page"
+            [disabled]="page()!.first"
+            (click)="goToPage(page()!.number - 1)">
+            Anterior
+          </button>
+
+          <span class="page-info">
+            Página {{ page()!.number + 1 }} de {{ page()!.totalPages }}
+            ({{ page()!.totalElements }} cuentas)
+          </span>
+
+          <button
+            class="btn-page"
+            [disabled]="page()!.last"
+            (click)="goToPage(page()!.number + 1)">
+            Siguiente
+          </button>
+        </div>
+      } @else {
+        <p>No hay cuentas disponibles</p>
       }
     </div>
   `,
   styles: [`
-    .account-list-container {
+    .accounts-container {
       padding: var(--spacing-xl);
       max-width: 1200px;
       margin: 0 auto;
     }
-    .header {
+    .accounts-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -124,88 +143,91 @@ import { AccountResponse } from '@core/models/account.model';
       text-decoration: underline;
     }
     .btn-primary {
-      background: var(--color-secondary);
-      color: var(--color-text-light);
-      padding: 0.75rem var(--spacing-lg);
-      border-radius: var(--border-radius-sm);
+      background: #00A859;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
       text-decoration: none;
       font-weight: 500;
-      border: none;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .btn-page {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
       cursor: pointer;
     }
-    .btn-secondary {
-      background: var(--color-gray);
-      color: var(--color-text-light);
-      padding: 0.75rem var(--spacing-lg);
-      border-radius: var(--border-radius-sm);
-      text-decoration: none;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
+    .btn-page:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-    .empty-state {
-      text-align: center;
-      padding: var(--spacing-3xl);
+    .page-info {
+      font-size: 0.875rem;
+      color: #666;
     }
     .search-panel {
-      background: var(--color-background-light);
-      padding: var(--spacing-lg);
-      border-radius: var(--border-radius-md);
-      margin-bottom: var(--spacing-xl);
-      box-shadow: var(--shadow-sm);
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .search-form {
       display: flex;
-      gap: var(--spacing-md);
+      gap: 1rem;
       align-items: center;
     }
     .search-input {
       flex: 1;
       padding: 0.75rem;
-      border: 1px solid var(--color-border-light);
-      border-radius: var(--border-radius-sm);
-      font-size: var(--font-size-base);
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
     }
     .btn-search {
-      background: var(--color-blue);
-      color: var(--color-text-light);
-      padding: 0.75rem var(--spacing-lg);
-      border-radius: var(--border-radius-sm);
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
+      background: #007bff;
+      color: white;
     }
     .btn-clear {
-      background: var(--color-gray);
-      color: var(--color-text-light);
-      padding: 0.75rem var(--spacing-lg);
-      border-radius: var(--border-radius-sm);
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
+      background: #6c757d;
+      color: white;
     }
   `]
 })
-export class AccountListComponent implements OnInit {
+export class AccountsListPaginatedComponent implements OnInit {
   private accountService = inject(AccountService);
   private fb = inject(FormBuilder);
 
-  accounts = signal<AccountResponse[]>([]);
+  page = signal<Page<AccountResponse> | null>(null);
   loading = signal(true);
+  isSearching = signal(false);
+  currentPageRequest: PageRequest = {
+    page: 0,
+    size: 10,
+    sortBy: 'createdAt',
+    sortDir: 'DESC'
+  };
 
   searchForm: FormGroup = this.fb.group({
     accountNumber: ['']
   });
 
   ngOnInit() {
-    this.loadAllAccounts();
+    this.loadAccounts();
   }
 
-  loadAllAccounts() {
+  loadAccounts() {
     this.loading.set(true);
-    this.accountService.get().subscribe({
+    this.accountService.getPaginated(this.currentPageRequest).subscribe({
       next: (data) => {
-        this.accounts.set(data);
+        this.page.set(data);
         this.loading.set(false);
       },
       error: () => {
@@ -217,18 +239,45 @@ export class AccountListComponent implements OnInit {
   searchAccount() {
     const accountNumber = this.searchForm.value.accountNumber?.trim();
     if (!accountNumber) {
-      this.loadAllAccounts();
+      this.isSearching.set(false);
+      this.loadAccounts();
       return;
     }
 
     this.loading.set(true);
+    this.isSearching.set(true);
     this.accountService.getByNumber(accountNumber).subscribe({
       next: (account) => {
-        this.accounts.set([account]);
+        // Simular una página con un solo resultado
+        this.page.set({
+          content: [account],
+          pageable: {} as any,
+          totalPages: 1,
+          totalElements: 1,
+          last: true,
+          first: true,
+          size: 1,
+          number: 0,
+          sort: { sorted: false, unsorted: true, empty: true },
+          numberOfElements: 1,
+          empty: false
+        });
         this.loading.set(false);
       },
       error: () => {
-        this.accounts.set([]);
+        this.page.set({
+          content: [],
+          pageable: {} as any,
+          totalPages: 0,
+          totalElements: 0,
+          last: true,
+          first: true,
+          size: 0,
+          number: 0,
+          sort: { sorted: false, unsorted: true, empty: true },
+          numberOfElements: 0,
+          empty: true
+        });
         this.loading.set(false);
       }
     });
@@ -236,6 +285,16 @@ export class AccountListComponent implements OnInit {
 
   clearSearch() {
     this.searchForm.reset();
-    this.loadAllAccounts();
+    this.isSearching.set(false);
+    this.currentPageRequest.page = 0;
+    this.loadAccounts();
+  }
+
+  goToPage(pageNumber: number) {
+    if (this.isSearching()) {
+      return; // No permitir paginación durante búsqueda
+    }
+    this.currentPageRequest.page = pageNumber;
+    this.loadAccounts();
   }
 }

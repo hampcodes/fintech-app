@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AccountService } from '@core/services/account.service';
 import { TransactionService } from '@core/services/transaction.service';
 import { AccountResponse } from '@core/models/account.model';
+import { TransactionRequest, TransactionType } from '@core/models/transaction.model';
 
 @Component({
   selector: 'app-withdraw',
@@ -15,20 +16,20 @@ import { AccountResponse } from '@core/models/account.model';
       <h2>Realizar Retiro</h2>
       <form [formGroup]="withdrawForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="accountId">Cuenta de origen:</label>
+          <label for="accountNumber">Cuenta de origen:</label>
           <select
-            id="accountId"
-            formControlName="accountId"
+            id="accountNumber"
+            formControlName="accountNumber"
             class="form-control"
             (change)="onAccountChange()">
             <option value="">Seleccionar cuenta</option>
             @for (account of accounts(); track account.id) {
-              <option [value]="account.id">
+              <option [value]="account.accountNumber">
                 {{ account.accountNumber + ' - ' + (account.customerName || 'Cliente') + ' ($' + account.balance.toFixed(2) + ')' }}
               </option>
             }
           </select>
-          @if (withdrawForm.get('accountId')?.invalid && withdrawForm.get('accountId')?.touched) {
+          @if (withdrawForm.get('accountNumber')?.invalid && withdrawForm.get('accountNumber')?.touched) {
             <small class="error">Cuenta requerida</small>
           }
         </div>
@@ -91,77 +92,77 @@ import { AccountResponse } from '@core/models/account.model';
   styles: [`
     .withdraw-container {
       max-width: 600px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: var(--spacing-xl) auto;
+      padding: var(--spacing-xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     .balance-info {
       display: flex;
       justify-content: space-between;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 4px;
-      margin-bottom: 1.5rem;
+      padding: var(--spacing-md);
+      background: var(--color-background);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-lg);
     }
     .balance-info .amount {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: #28a745;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-success);
     }
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-base);
     }
     textarea.form-control {
       resize: vertical;
     }
     .error {
-      color: red;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-xs);
       display: block;
     }
     .alert-error {
       padding: 0.75rem;
-      background: #f8d7da;
-      color: #721c24;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-md);
     }
     .alert-success {
       padding: 0.75rem;
-      background: #d4edda;
-      color: #155724;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: var(--color-success-light);
+      color: var(--color-success-dark);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-md);
     }
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: var(--spacing-md);
     }
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem var(--spacing-lg);
+      border-radius: var(--border-radius-sm);
       border: none;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
     }
     .btn-warning {
-      background: #ffc107;
-      color: #000;
+      background: var(--color-warning);
+      color: var(--color-text-primary);
       flex: 1;
     }
     .btn-secondary {
-      background: #6c757d;
-      color: white;
+      background: var(--color-gray);
+      color: var(--color-text-light);
     }
     .btn:disabled {
       opacity: 0.6;
@@ -182,13 +183,13 @@ export class WithdrawComponent implements OnInit {
   successMessage = signal('');
 
   withdrawForm: FormGroup = this.fb.group({
-    accountId: ['', Validators.required],
+    accountNumber: ['', Validators.required],
     amount: [0, [Validators.required, Validators.min(0.01)]],
     description: ['']
   });
 
   ngOnInit() {
-    this.accountService.getAccounts().subscribe({
+    this.accountService.get().subscribe({
       next: (data) => {
         this.accounts.set(data);
       }
@@ -196,8 +197,8 @@ export class WithdrawComponent implements OnInit {
   }
 
   onAccountChange() {
-    const accountId = this.withdrawForm.get('accountId')?.value;
-    const account = this.accounts().find(a => a.id === accountId);
+    const accountNumber = this.withdrawForm.get('accountNumber')?.value;
+    const account = this.accounts().find(a => a.accountNumber === accountNumber);
     this.selectedAccount.set(account || null);
 
     // Actualizar validadores del monto
@@ -227,9 +228,16 @@ export class WithdrawComponent implements OnInit {
       this.errorMessage.set('');
       this.successMessage.set('');
 
-      const { accountId, amount, description } = this.withdrawForm.value;
+      const { accountNumber, amount, description } = this.withdrawForm.value;
 
-      this.transactionService.withdraw(accountId, amount, description).subscribe({
+      const request: TransactionRequest = {
+        accountNumber,
+        type: TransactionType.WITHDRAW,
+        amount,
+        description
+      };
+
+      this.transactionService.post(request).subscribe({
         next: () => {
           this.successMessage.set('Retiro realizado exitosamente');
           this.loading.set(false);

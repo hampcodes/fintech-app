@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AccountService } from '@core/services/account.service';
 import { TransactionService } from '@core/services/transaction.service';
 import { AccountResponse } from '@core/models/account.model';
+import { TransactionRequest, TransactionType } from '@core/models/transaction.model';
 
 @Component({
   selector: 'app-deposit',
@@ -15,19 +16,19 @@ import { AccountResponse } from '@core/models/account.model';
       <h2>Realizar Depósito</h2>
       <form [formGroup]="depositForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="accountId">Cuenta destino:</label>
+          <label for="accountNumber">Cuenta destino:</label>
           <select
-            id="accountId"
-            formControlName="accountId"
+            id="accountNumber"
+            formControlName="accountNumber"
             class="form-control">
             <option value="">Seleccionar cuenta</option>
             @for (account of accounts(); track account.id) {
-              <option [value]="account.id">
+              <option [value]="account.accountNumber">
                 {{ account.accountNumber + ' - ' + (account.customerName || 'Cliente') + ' ($' + account.balance.toFixed(2) + ')' }}
               </option>
             }
           </select>
-          @if (depositForm.get('accountId')?.invalid && depositForm.get('accountId')?.touched) {
+          @if (depositForm.get('accountNumber')?.invalid && depositForm.get('accountNumber')?.touched) {
             <small class="error">Cuenta requerida</small>
           }
         </div>
@@ -77,64 +78,64 @@ import { AccountResponse } from '@core/models/account.model';
   styles: [`
     .deposit-container {
       max-width: 600px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: var(--spacing-xl) auto;
+      padding: var(--spacing-xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-base);
     }
     textarea.form-control {
       resize: vertical;
     }
     .error {
-      color: red;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-xs);
       display: block;
     }
     .alert-error {
       padding: 0.75rem;
-      background: #f8d7da;
-      color: #721c24;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-md);
     }
     .alert-success {
       padding: 0.75rem;
-      background: #d4edda;
-      color: #155724;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: var(--color-success-light);
+      color: var(--color-success-dark);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-md);
     }
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: var(--spacing-md);
     }
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem var(--spacing-lg);
+      border-radius: var(--border-radius-sm);
       border: none;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
     }
     .btn-success {
-      background: #28a745;
-      color: white;
+      background: var(--color-success);
+      color: var(--color-text-light);
       flex: 1;
     }
     .btn-secondary {
-      background: #6c757d;
-      color: white;
+      background: var(--color-gray);
+      color: var(--color-text-light);
     }
     .btn:disabled {
       opacity: 0.6;
@@ -154,13 +155,13 @@ export class DepositComponent implements OnInit {
   successMessage = signal('');
 
   depositForm: FormGroup = this.fb.group({
-    accountId: ['', Validators.required],
+    accountNumber: ['', Validators.required],
     amount: [0, [Validators.required, Validators.min(0.01)]],
     description: ['']
   });
 
   ngOnInit() {
-    this.accountService.getAccounts().subscribe({
+    this.accountService.get().subscribe({
       next: (data) => {
         this.accounts.set(data);
       }
@@ -173,9 +174,16 @@ export class DepositComponent implements OnInit {
       this.errorMessage.set('');
       this.successMessage.set('');
 
-      const { accountId, amount, description } = this.depositForm.value;
+      const { accountNumber, amount, description } = this.depositForm.value;
 
-      this.transactionService.deposit(accountId, amount, description).subscribe({
+      const request: TransactionRequest = {
+        accountNumber,
+        type: TransactionType.DEPOSIT,
+        amount,
+        description
+      };
+
+      this.transactionService.post(request).subscribe({
         next: () => {
           this.successMessage.set('Depósito realizado exitosamente');
           this.loading.set(false);

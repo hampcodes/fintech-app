@@ -68,84 +68,84 @@ import { TransactionResponse } from '@core/models/transaction.model';
   styles: [`
     .transaction-detail-container {
       max-width: 700px;
-      margin: 2rem auto;
-      padding: 2rem;
+      margin: var(--spacing-xl) auto;
+      padding: var(--spacing-xl);
     }
     .detail-card {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: var(--color-background-light);
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     h2 {
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #f8f9fa;
+      margin-bottom: var(--spacing-xl);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 2px solid var(--color-background);
     }
     .detail-row {
       display: flex;
       justify-content: space-between;
-      padding: 1rem 0;
-      border-bottom: 1px solid #f8f9fa;
+      padding: var(--spacing-md) 0;
+      border-bottom: 1px solid var(--color-background);
     }
     .detail-row:last-of-type {
       border-bottom: none;
-      margin-bottom: 2rem;
+      margin-bottom: var(--spacing-xl);
     }
     .label {
-      font-weight: 600;
-      color: #6c757d;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
     }
     .value {
       text-align: right;
     }
     .tx-type {
       text-transform: capitalize;
-      padding: 0.25rem 0.75rem;
-      border-radius: 4px;
-      font-weight: 500;
+      padding: var(--spacing-xs) 0.75rem;
+      border-radius: var(--border-radius-sm);
+      font-weight: var(--font-weight-medium);
     }
     .tx-type.deposit {
-      background: #d4edda;
-      color: #155724;
+      background: var(--color-success-light);
+      color: var(--color-success-dark);
     }
     .tx-type.withdrawal {
-      background: #f8d7da;
-      color: #721c24;
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
     }
     .amount {
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
     }
     .amount.positive {
-      color: #28a745;
+      color: var(--color-success);
     }
     .amount.negative {
-      color: #dc3545;
+      color: var(--color-danger);
     }
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: var(--spacing-md);
       justify-content: center;
     }
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem var(--spacing-lg);
+      border-radius: var(--border-radius-sm);
       text-decoration: none;
-      font-weight: 500;
-      color: white;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-light);
     }
     .btn-primary {
-      background: #007bff;
+      background: var(--color-blue);
     }
     .btn-secondary {
-      background: #6c757d;
+      background: var(--color-gray);
     }
     .not-found {
       text-align: center;
-      padding: 3rem;
-      background: white;
-      border-radius: 8px;
+      padding: var(--spacing-3xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
     }
   `]
 })
@@ -161,7 +161,7 @@ export class TransactionDetailComponent implements OnInit {
     const transactionId = this.route.snapshot.paramMap.get('id');
 
     if (transactionId) {
-      this.transactionService.getTransactionById(transactionId).subscribe({
+      this.transactionService.getById(transactionId).subscribe({
         next: (data) => {
           this.transaction.set(data);
           this.loading.set(false);

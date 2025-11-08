@@ -40,7 +40,6 @@ import { RouterLink } from '@angular/router';
                 <span>Abrir Cuenta Gratis</span>
                 <span class="btn-icon">→</span>
               </a>
-              <a routerLink="/login" class="btn btn-secondary">Iniciar Sesión</a>
             </div>
             <div class="hero-features">
               <div class="hero-feature">
@@ -289,27 +288,9 @@ import { RouterLink } from '@angular/router';
     </div>
   `,
   styles: [`
-    /* Variables de colores Interbank */
-    :host {
-      --color-primary: #003D7A;
-      --color-secondary: #00A859;
-      --color-light: #F5F5F5;
-      --color-white: #FFFFFF;
-      --color-text: #1a1a1a;
-      --color-text-light: #666666;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     .landing-container {
       min-height: 100vh;
-      background: var(--color-white);
+      background: var(--color-background-light);
     }
 
     /* Navbar */
@@ -318,16 +299,16 @@ import { RouterLink } from '@angular/router';
       top: 0;
       left: 0;
       right: 0;
-      background: var(--color-white);
-      box-shadow: var(--shadow);
-      z-index: 1000;
-      padding: 16px 0;
+      background: var(--color-background-light);
+      box-shadow: var(--shadow-md);
+      z-index: var(--z-index-fixed);
+      padding: var(--spacing-md) 0;
     }
 
     .navbar-content {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 var(--spacing-lg);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -336,13 +317,13 @@ import { RouterLink } from '@angular/router';
     .logo {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1.5rem;
-      font-weight: 700;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
     }
 
     .logo-icon {
-      font-size: 2rem;
+      font-size: var(--font-size-3xl);
     }
 
     .logo-text {
@@ -355,17 +336,17 @@ import { RouterLink } from '@angular/router';
 
     .nav-buttons {
       display: flex;
-      gap: 16px;
+      gap: var(--spacing-md);
       align-items: center;
     }
 
     .nav-btn {
       padding: 12px 28px;
-      border-radius: 10px;
+      border-radius: var(--border-radius-lg);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
       font-size: 0.95rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: var(--transition-base);
       border: 2px solid transparent;
       position: relative;
       overflow: hidden;
@@ -387,7 +368,7 @@ import { RouterLink } from '@angular/router';
       left: 50%;
       width: 0;
       height: 0;
-      border-radius: 50%;
+      border-radius: var(--border-radius-round);
       background: var(--color-primary);
       transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
       transform: translate(-50%, -50%);
@@ -395,7 +376,7 @@ import { RouterLink } from '@angular/router';
     }
 
     .nav-btn-login:hover {
-      color: var(--color-white);
+      color: var(--color-text-light);
       border-color: var(--color-primary);
       box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);
     }
@@ -406,8 +387,8 @@ import { RouterLink } from '@angular/router';
     }
 
     .nav-btn-register {
-      background: linear-gradient(135deg, var(--color-secondary) 0%, #00c96d 100%);
-      color: var(--color-white);
+      background: var(--gradient-success);
+      color: var(--color-text-light);
       border: 2px solid var(--color-secondary);
       box-shadow: 0 4px 12px rgba(0, 168, 89, 0.3);
     }
@@ -420,9 +401,9 @@ import { RouterLink } from '@angular/router';
 
     /* Hero Section */
     .hero {
-      padding: 120px 20px 80px;
+      padding: 120px var(--spacing-lg) 80px;
       background: linear-gradient(135deg, var(--color-primary) 0%, #004a94 100%);
-      color: var(--color-white);
+      color: var(--color-text-light);
     }
 
     .hero-container {
@@ -430,7 +411,7 @@ import { RouterLink } from '@angular/router';
       margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      gap: 40px;
+      gap: var(--spacing-2xl);
       align-items: center;
     }
 
@@ -451,11 +432,11 @@ import { RouterLink } from '@angular/router';
       display: inline-block;
       background: rgba(0, 168, 89, 0.2);
       color: var(--color-secondary);
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius-2xl);
       font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 24px;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-xl);
       border: 1px solid var(--color-secondary);
     }
 
@@ -463,7 +444,7 @@ import { RouterLink } from '@angular/router';
       font-size: 3.5rem;
       font-weight: 800;
       line-height: 1.1;
-      margin-bottom: 24px;
+      margin-bottom: var(--spacing-xl);
     }
 
     .highlight {
@@ -472,51 +453,51 @@ import { RouterLink } from '@angular/router';
     }
 
     .hero-subtitle {
-      font-size: 1.2rem;
+      font-size: var(--font-size-lg);
       line-height: 1.7;
       opacity: 0.95;
-      margin-bottom: 32px;
+      margin-bottom: var(--spacing-2xl);
     }
 
     .hero-buttons {
       display: flex;
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-2xl);
       flex-wrap: wrap;
     }
 
     .btn {
-      padding: 16px 32px;
-      border-radius: 10px;
+      padding: var(--spacing-md) var(--spacing-2xl);
+      border-radius: var(--border-radius-lg);
       text-decoration: none;
-      font-weight: 700;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-base);
+      transition: var(--transition-base);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--spacing-sm);
       border: 2px solid transparent;
     }
 
     .btn-primary {
       background: var(--color-secondary);
-      color: var(--color-white);
+      color: var(--color-text-light);
     }
 
     .btn-primary:hover {
-      background: #00c96d;
+      background: var(--color-secondary-light);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 168, 89, 0.3);
     }
 
     .btn-secondary {
       background: transparent;
-      color: var(--color-white);
-      border: 2px solid var(--color-white);
+      color: var(--color-text-light);
+      border: 2px solid var(--color-text-light);
     }
 
     .btn-secondary:hover {
-      background: var(--color-white);
+      background: var(--color-background-light);
       color: var(--color-primary);
     }
 
@@ -531,29 +512,29 @@ import { RouterLink } from '@angular/router';
 
     .hero-features {
       display: flex;
-      gap: 24px;
+      gap: var(--spacing-xl);
       flex-wrap: wrap;
     }
 
     .hero-feature {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--spacing-sm);
       font-size: 0.95rem;
       opacity: 0.95;
     }
 
     .check {
       background: var(--color-secondary);
-      color: var(--color-white);
+      color: var(--color-text-light);
       width: 20px;
       height: 20px;
-      border-radius: 50%;
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.8rem;
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
     }
 
     /* Card Mockup with 3D Flip Effect */
@@ -606,7 +587,7 @@ import { RouterLink } from '@angular/router';
       height: 100%;
       position: absolute;
       backface-visibility: hidden;
-      border-radius: 20px;
+      border-radius: var(--border-radius-2xl);
       padding: 28px;
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
     }
@@ -614,7 +595,7 @@ import { RouterLink } from '@angular/router';
     /* Frente de la tarjeta */
     .card-front {
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
-      color: white;
+      color: var(--color-text-light);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -819,8 +800,8 @@ import { RouterLink } from '@angular/router';
 
     /* Features Section */
     .features {
-      padding: 100px 20px;
-      background: var(--color-light);
+      padding: 100px var(--spacing-lg);
+      background: var(--color-background);
     }
 
     .features-container {
@@ -834,69 +815,69 @@ import { RouterLink } from '@angular/router';
     }
 
     .section-title {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin-bottom: 16px;
+      margin-bottom: var(--spacing-md);
     }
 
     .section-subtitle {
-      font-size: 1.1rem;
-      color: var(--color-text-light);
+      font-size: var(--font-size-lg);
+      color: var(--color-text-secondary);
     }
 
     .features-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 30px;
+      gap: var(--spacing-2xl);
     }
 
     .feature-card {
-      background: var(--color-white);
-      padding: 40px 30px;
-      border-radius: 16px;
+      background: var(--color-background-light);
+      padding: var(--spacing-2xl) var(--spacing-xl);
+      border-radius: var(--border-radius-xl);
       text-align: center;
-      transition: all 0.3s ease;
+      transition: var(--transition-base);
       border: 2px solid transparent;
     }
 
     .feature-card:hover {
       transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-xl);
       border-color: var(--color-secondary);
     }
 
     .feature-icon-wrapper {
       width: 80px;
       height: 80px;
-      background: linear-gradient(135deg, var(--color-secondary), #00c96d);
-      border-radius: 20px;
+      background: var(--gradient-success);
+      border-radius: var(--border-radius-2xl);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 24px;
+      margin: 0 auto var(--spacing-xl);
     }
 
     .feature-icon {
-      font-size: 2.5rem;
+      font-size: var(--font-size-3xl);
     }
 
     .feature-card h3 {
       font-size: 1.4rem;
       color: var(--color-primary);
-      margin-bottom: 12px;
-      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      font-weight: var(--font-weight-bold);
     }
 
     .feature-card p {
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       line-height: 1.6;
     }
 
     /* Benefits Section */
     .benefits {
-      padding: 100px 20px;
-      background: var(--color-white);
+      padding: 100px var(--spacing-lg);
+      background: var(--color-background-light);
     }
 
     .benefits-container {
@@ -909,21 +890,21 @@ import { RouterLink } from '@angular/router';
     }
 
     .benefits-title {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin-bottom: 40px;
+      margin-bottom: var(--spacing-2xl);
     }
 
     .benefits-list {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--spacing-xl);
     }
 
     .benefit-item {
       display: flex;
-      gap: 16px;
+      gap: var(--spacing-md);
       align-items: start;
     }
 
@@ -931,59 +912,59 @@ import { RouterLink } from '@angular/router';
       width: 32px;
       height: 32px;
       background: var(--color-secondary);
-      color: var(--color-white);
-      border-radius: 50%;
+      color: var(--color-text-light);
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       flex-shrink: 0;
     }
 
     .benefit-text h4 {
-      font-size: 1.2rem;
+      font-size: var(--font-size-lg);
       color: var(--color-primary);
       margin-bottom: 4px;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
     }
 
     .benefit-text p {
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       line-height: 1.5;
     }
 
     .benefits-stats {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: var(--spacing-xl);
     }
 
     .stat-card {
       background: linear-gradient(135deg, var(--color-primary), #004a94);
-      padding: 40px;
-      border-radius: 16px;
-      color: var(--color-white);
+      padding: var(--spacing-2xl);
+      border-radius: var(--border-radius-xl);
+      color: var(--color-text-light);
       text-align: center;
     }
 
     .stat-number {
-      font-size: 3rem;
+      font-size: var(--font-size-3xl);
       font-weight: 800;
       color: var(--color-secondary);
-      margin-bottom: 8px;
+      margin-bottom: var(--spacing-sm);
     }
 
     .stat-label {
-      font-size: 1.1rem;
+      font-size: var(--font-size-lg);
       opacity: 0.95;
     }
 
     /* CTA Section */
     .cta {
       position: relative;
-      padding: 120px 20px;
+      padding: 120px var(--spacing-lg);
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, var(--color-primary) 100%);
-      color: var(--color-white);
+      color: var(--color-text-light);
       overflow: hidden;
     }
 
@@ -1057,17 +1038,17 @@ import { RouterLink } from '@angular/router';
     .cta-subtitle {
       font-size: 1.3rem;
       opacity: 0.95;
-      margin-bottom: 40px;
+      margin-bottom: var(--spacing-2xl);
       line-height: 1.6;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .btn-cta {
-      padding: 20px 48px;
-      font-size: 1.2rem;
-      background: var(--color-white);
+      padding: var(--spacing-lg) 48px;
+      font-size: var(--font-size-lg);
+      background: var(--color-background-light);
       color: var(--color-primary);
-      margin-bottom: 24px;
+      margin-bottom: var(--spacing-xl);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       position: relative;
       overflow: hidden;
@@ -1080,7 +1061,7 @@ import { RouterLink } from '@angular/router';
       left: 50%;
       width: 0;
       height: 0;
-      border-radius: 50%;
+      border-radius: var(--border-radius-round);
       background: var(--color-primary);
       transition: width 0.6s ease, height 0.6s ease, top 0.6s ease, left 0.6s ease;
       transform: translate(-50%, -50%);
@@ -1093,7 +1074,7 @@ import { RouterLink } from '@angular/router';
     }
 
     .btn-cta:hover {
-      color: var(--color-white);
+      color: var(--color-text-light);
       transform: translateY(-3px);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     }
@@ -1107,8 +1088,8 @@ import { RouterLink } from '@angular/router';
     /* Footer */
     .footer {
       background: var(--color-primary);
-      color: var(--color-white);
-      padding: 60px 20px 20px;
+      color: var(--color-text-light);
+      padding: 60px var(--spacing-lg) var(--spacing-lg);
     }
 
     .footer-content {
@@ -1117,11 +1098,11 @@ import { RouterLink } from '@angular/router';
       display: grid;
       grid-template-columns: 2fr 3fr;
       gap: 60px;
-      margin-bottom: 40px;
+      margin-bottom: var(--spacing-2xl);
     }
 
     .footer-brand .logo-text {
-      color: var(--color-white);
+      color: var(--color-text-light);
     }
 
     .footer-brand .logo-highlight {
@@ -1130,26 +1111,26 @@ import { RouterLink } from '@angular/router';
 
     .footer-description {
       color: rgba(255, 255, 255, 0.9);
-      margin-top: 12px;
-      font-size: 1rem;
+      margin-top: var(--spacing-md);
+      font-size: var(--font-size-base);
     }
 
     .footer-links {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
+      gap: var(--spacing-2xl);
     }
 
     .footer-column h4 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--spacing-md);
       color: var(--color-secondary);
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
     }
 
     .footer-column a {
       display: block;
-      color: var(--color-white);
+      color: var(--color-text-light);
       text-decoration: none;
       opacity: 0.8;
       margin-bottom: 12px;
@@ -1217,12 +1198,12 @@ import { RouterLink } from '@angular/router';
     /* Móviles */
     @media (max-width: 768px) {
       .navbar {
-        padding: 12px 0;
+        padding: var(--spacing-md) 0;
       }
 
       .navbar-content {
         flex-direction: column;
-        gap: 12px;
+        gap: var(--spacing-md);
       }
 
       .logo {
@@ -1230,27 +1211,27 @@ import { RouterLink } from '@angular/router';
       }
 
       .logo-icon {
-        font-size: 1.5rem;
+        font-size: var(--font-size-xl);
       }
 
       .nav-buttons {
         width: 100%;
         flex-direction: column;
-        gap: 10px;
+        gap: var(--spacing-sm);
       }
 
       .nav-btn {
         width: 100%;
-        padding: 12px 20px;
+        padding: var(--spacing-md) var(--spacing-lg);
         justify-content: center;
       }
 
       .hero {
-        padding: 120px 16px 50px;
+        padding: 120px var(--spacing-md) 50px;
       }
 
       .hero-container {
-        gap: 30px;
+        gap: var(--spacing-2xl);
       }
 
       .hero-image {
@@ -1263,39 +1244,39 @@ import { RouterLink } from '@angular/router';
       }
 
       .hero-title {
-        font-size: 2rem;
+        font-size: var(--font-size-3xl);
         line-height: 1.2;
       }
 
       .hero-subtitle {
-        font-size: 1rem;
+        font-size: var(--font-size-base);
         line-height: 1.6;
-        margin-bottom: 24px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .hero-buttons {
         flex-direction: column;
-        gap: 12px;
+        gap: var(--spacing-md);
       }
 
       .btn {
         width: 100%;
         justify-content: center;
-        padding: 14px 24px;
+        padding: 14px var(--spacing-xl);
       }
 
       .hero-features {
         flex-direction: column;
-        gap: 12px;
+        gap: var(--spacing-md);
         align-items: center;
       }
 
       .features {
-        padding: 60px 16px;
+        padding: 60px var(--spacing-md);
       }
 
       .section-header {
-        margin-bottom: 40px;
+        margin-bottom: var(--spacing-2xl);
       }
 
       .section-title {
@@ -1303,45 +1284,45 @@ import { RouterLink } from '@angular/router';
       }
 
       .section-subtitle {
-        font-size: 1rem;
+        font-size: var(--font-size-base);
       }
 
       .features-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: var(--spacing-lg);
       }
 
       .feature-card {
-        padding: 30px 24px;
+        padding: var(--spacing-2xl) var(--spacing-xl);
       }
 
       .benefits {
-        padding: 60px 16px;
+        padding: 60px var(--spacing-md);
       }
 
       .benefits-title {
         font-size: 1.75rem;
-        margin-bottom: 30px;
+        margin-bottom: var(--spacing-2xl);
       }
 
       .benefit-item {
-        gap: 12px;
+        gap: var(--spacing-md);
       }
 
       .benefit-text h4 {
-        font-size: 1.1rem;
+        font-size: var(--font-size-lg);
       }
 
       .benefit-text p {
-        font-size: 0.9rem;
+        font-size: var(--font-size-sm);
       }
 
       .benefits-stats {
-        gap: 16px;
+        gap: var(--spacing-md);
       }
 
       .stat-card {
-        padding: 30px;
+        padding: var(--spacing-2xl);
       }
 
       .stat-number {
@@ -1349,26 +1330,26 @@ import { RouterLink } from '@angular/router';
       }
 
       .stat-label {
-        font-size: 1rem;
+        font-size: var(--font-size-base);
       }
 
       .cta {
-        padding: 80px 16px;
+        padding: 80px var(--spacing-md);
       }
 
       .cta-title {
         font-size: 1.75rem;
-        margin-bottom: 16px;
+        margin-bottom: var(--spacing-md);
       }
 
       .cta-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 30px;
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--spacing-2xl);
       }
 
       .btn-cta {
-        padding: 16px 32px;
-        font-size: 1.1rem;
+        padding: var(--spacing-md) var(--spacing-2xl);
+        font-size: var(--font-size-lg);
       }
 
       .cta-note {
@@ -1381,13 +1362,13 @@ import { RouterLink } from '@angular/router';
       }
 
       .footer {
-        padding: 40px 16px 16px;
+        padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-md);
       }
 
       .footer-content {
         grid-template-columns: 1fr;
-        gap: 30px;
-        margin-bottom: 30px;
+        gap: var(--spacing-2xl);
+        margin-bottom: var(--spacing-2xl);
       }
 
       .footer-brand {
@@ -1396,7 +1377,7 @@ import { RouterLink } from '@angular/router';
 
       .footer-links {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: var(--spacing-xl);
         text-align: center;
       }
 
@@ -1409,7 +1390,7 @@ import { RouterLink } from '@angular/router';
       }
 
       .footer-bottom {
-        padding-top: 20px;
+        padding-top: var(--spacing-lg);
         font-size: 0.85rem;
       }
     }

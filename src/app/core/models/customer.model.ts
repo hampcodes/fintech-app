@@ -1,9 +1,8 @@
 // ===== ENUMS =====
 export enum KycStatus {
   PENDING = 'PENDING',
-  VERIFIED = 'VERIFIED',
-  REJECTED = 'REJECTED',
-  REQUIRES_UPDATE = 'REQUIRES_UPDATE'
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED'
 }
 
 // ===== REQUEST =====

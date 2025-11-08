@@ -9,19 +9,15 @@ import { CommonModule } from '@angular/common';
     <footer class="footer">
       <div class="footer-content">
         <p class="footer-text">&copy; 2025 <span class="brand">FinTech</span> App. Todos los derechos reservados by <span class="company">HampCode</span>.</p>
-        <div class="footer-links">
-          <a href="#">Términos y Condiciones</a>
-          <a href="#">Política de Privacidad</a>
-          <a href="#">Contacto</a>
-        </div>
+       
       </div>
     </footer>
   `,
   styles: [`
     .footer {
       background: #2d3748;
-      color: white;
-      padding: 2rem;
+      color: var(--color-text-light);
+      padding: var(--spacing-xl);
       margin-top: auto;
     }
 
@@ -32,7 +28,7 @@ import { CommonModule } from '@angular/common';
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: var(--spacing-md);
     }
 
     .footer-text {
@@ -42,24 +38,24 @@ import { CommonModule } from '@angular/common';
 
     .brand {
       color: #fbbf24;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
     }
 
     .company {
       color: #10b981;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
     }
 
     .footer-links {
       display: flex;
-      gap: 2rem;
+      gap: var(--spacing-xl);
     }
 
     .footer-links a {
       color: #cbd5e0;
       text-decoration: none;
-      transition: color 0.3s;
-      font-weight: 500;
+      transition: var(--transition-base);
+      font-weight: var(--font-weight-medium);
     }
 
     .footer-links a:hover {
@@ -74,7 +70,7 @@ import { CommonModule } from '@angular/common';
 
       .footer-links {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: var(--spacing-sm);
       }
     }
   `]

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { LoginRequest } from '@core/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -117,30 +118,20 @@ import { AuthService } from '@core/services/auth.service';
     </div>
   `,
   styles: [`
-    :host {
-      --color-primary: #003D7A;
-      --color-secondary: #00A859;
-      --color-light: #F5F5F5;
-      --color-white: #FFFFFF;
-      --color-error: #dc3545;
-      --color-text: #333333;
-      --color-text-light: #666666;
-    }
-
     .login-container {
       min-height: calc(100vh - 200px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1rem;
+      padding: var(--spacing-xl) var(--spacing-md);
     }
 
     .login-wrapper {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      max-width: 1200px;
+      max-width: 1400px;
       width: 100%;
-      gap: 3rem;
+      gap: var(--spacing-3xl);
       align-items: center;
     }
 
@@ -149,13 +140,13 @@ import { AuthService } from '@core/services/auth.service';
       align-items: center;
       justify-content: center;
       position: relative;
-      padding: 2rem;
+      padding: var(--spacing-xl);
     }
 
     .image-content {
       position: relative;
       width: 100%;
-      max-width: 500px;
+      max-width: 380px;
       height: 600px;
     }
 
@@ -192,88 +183,90 @@ import { AuthService } from '@core/services/auth.service';
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
-      max-width: 400px;
+      max-width: 100%;
       z-index: 1;
     }
 
     .welcome-badge {
-      background: white;
-      padding: 2.5rem 2rem;
-      border-radius: 20px;
+      background: var(--color-background-light);
+      padding: 2rem 1.5rem;
+      border-radius: var(--border-radius-2xl);
       box-shadow: 0 20px 50px rgba(0, 168, 89, 0.25);
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
       border: 3px solid var(--color-secondary);
+      width: 100%;
     }
 
     .badge-check {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--color-secondary) 0%, #00c96d 100%);
-      color: white;
-      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      background: var(--gradient-success);
+      color: var(--color-text-light);
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
       flex-shrink: 0;
     }
 
     .badge-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin-bottom: 0.25rem;
+      margin-bottom: var(--spacing-xs);
     }
 
     .badge-subtitle {
-      font-size: 1rem;
+      font-size: var(--font-size-base);
       color: var(--color-secondary);
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
     }
 
     .features-list {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
+      background: var(--color-background-light);
+      padding: 1.5rem;
+      border-radius: var(--border-radius-xl);
       box-shadow: 0 10px 30px rgba(0, 61, 122, 0.15);
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1rem;
+      width: 100%;
     }
 
     .feature-item {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: var(--spacing-md);
       font-size: 1.1rem;
-      color: var(--color-text);
-      font-weight: 500;
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
     }
 
     .feature-check {
       width: 28px;
       height: 28px;
       background: var(--color-secondary);
-      color: white;
-      border-radius: 50%;
+      color: var(--color-text-light);
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       flex-shrink: 0;
     }
 
     .login-card {
       width: 100%;
-      max-width: 500px;
-      background: var(--color-white);
-      border-radius: 20px;
-      box-shadow: 0 15px 50px rgba(0, 61, 122, 0.15);
-      padding: 3rem 2.5rem;
+      max-width: 550px;
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-2xl);
+      box-shadow: var(--shadow-xl);
+      padding: var(--spacing-3xl) 2.5rem;
     }
 
     .login-header {
@@ -283,41 +276,41 @@ import { AuthService } from '@core/services/auth.service';
 
     .logo-icon {
       font-size: 3.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: var(--spacing-md);
     }
 
     .login-header h1 {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 var(--spacing-sm) 0;
     }
 
     .login-header p {
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       margin: 0;
-      font-size: 1rem;
+      font-size: var(--font-size-base);
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
 
     label {
       display: block;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: 0.5rem;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-sm);
       font-size: 0.95rem;
     }
 
     .form-control {
       width: 100%;
-      padding: 0.875rem 1rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      padding: 0.875rem var(--spacing-md);
+      border: 2px solid var(--color-border-light);
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      transition: var(--transition-base);
       box-sizing: border-box;
     }
 
@@ -328,11 +321,11 @@ import { AuthService } from '@core/services/auth.service';
     }
 
     .form-control::placeholder {
-      color: #aaa;
+      color: var(--color-text-muted);
     }
 
     .error-input {
-      border-color: var(--color-error);
+      border-color: var(--color-danger);
     }
 
     .error-input:focus {
@@ -341,24 +334,24 @@ import { AuthService } from '@core/services/auth.service';
 
     .error-message {
       display: block;
-      color: var(--color-error);
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-      font-weight: 500;
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-sm);
+      font-weight: var(--font-weight-medium);
     }
 
     .alert {
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-lg);
+      margin-bottom: var(--spacing-lg);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--spacing-sm);
     }
 
     .alert-error {
-      background: #fee;
-      color: var(--color-error);
+      background: var(--color-danger-light);
+      color: var(--color-danger);
       border: 1px solid #fcc;
     }
 
@@ -368,23 +361,23 @@ import { AuthService } from '@core/services/auth.service';
 
     .btn-primary {
       width: 100%;
-      padding: 1rem;
+      padding: var(--spacing-md);
       background: var(--color-secondary);
-      color: var(--color-white);
+      color: var(--color-text-light);
       border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: var(--transition-base);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: var(--spacing-sm);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #00c96d;
+      background: var(--color-secondary-light);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 168, 89, 0.3);
     }
@@ -398,9 +391,9 @@ import { AuthService } from '@core/services/auth.service';
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid var(--color-white);
+      border: 2px solid var(--color-text-light);
       border-top-color: transparent;
-      border-radius: 50%;
+      border-radius: var(--border-radius-round);
       animation: spin 0.6s linear infinite;
     }
 
@@ -410,7 +403,7 @@ import { AuthService } from '@core/services/auth.service';
 
     .divider {
       text-align: center;
-      margin: 2rem 0;
+      margin: var(--spacing-xl) 0;
       position: relative;
     }
 
@@ -421,7 +414,7 @@ import { AuthService } from '@core/services/auth.service';
       top: 50%;
       width: 45%;
       height: 1px;
-      background: #e0e0e0;
+      background: var(--color-border-light);
     }
 
     .divider::before {
@@ -433,15 +426,15 @@ import { AuthService } from '@core/services/auth.service';
     }
 
     .divider span {
-      background: var(--color-white);
-      padding: 0 1rem;
-      color: var(--color-text-light);
+      background: var(--color-background-light);
+      padding: 0 var(--spacing-md);
+      color: var(--color-text-secondary);
       font-size: 0.9rem;
     }
 
     .register-link {
       text-align: center;
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       margin: 0;
       font-size: 0.95rem;
     }
@@ -449,12 +442,12 @@ import { AuthService } from '@core/services/auth.service';
     .register-link a {
       color: var(--color-secondary);
       text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
+      font-weight: var(--font-weight-semibold);
+      transition: var(--transition-base);
     }
 
     .register-link a:hover {
-      color: #00c96d;
+      color: var(--color-secondary-light);
       text-decoration: underline;
     }
 
@@ -475,7 +468,7 @@ import { AuthService } from '@core/services/auth.service';
 
     @media (max-width: 576px) {
       .login-card {
-        padding: 2rem 1.5rem;
+        padding: var(--spacing-xl) var(--spacing-lg);
       }
 
       .login-header h1 {
@@ -502,11 +495,14 @@ export class LoginComponent {
       this.loading.set(true);
       this.errorMessage.set('');
 
-      const { email, password } = this.loginForm.value;
+      const credentials: LoginRequest = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password
+      };
 
-      this.authService.login(email, password).subscribe({
+      this.authService.login(credentials).subscribe({
         next: () => {
-          this.router.navigate(['/accounts']);
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           this.errorMessage.set('Credenciales incorrectas. Por favor, verifica tus datos.');
