@@ -98,7 +98,7 @@ import { RouterLink } from '@angular/router';
                     <div class="card-details">
                       <div class="card-holder">
                         <div class="label">TITULAR</div>
-                        <div class="card-name">HENRY A. MENDOZA PUERTA</div>
+                        <div class="card-name">HAMP</div>
                       </div>
                       <div class="card-expiry">
                         <div class="label">VÁLIDO HASTA</div>
@@ -111,7 +111,7 @@ import { RouterLink } from '@angular/router';
                 <div class="card-back">
                   <div class="magnetic-strip"></div>
                   <div class="signature-panel">
-                    <div class="signature">Henry Mendoza</div>
+                    <div class="signature">Hamp</div>
                     <div class="cvv-box">
                       <div class="cvv-label">CVV</div>
                       <div class="cvv-number">***</div>
