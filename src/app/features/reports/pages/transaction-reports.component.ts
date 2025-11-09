@@ -334,10 +334,13 @@ export class TransactionReportsComponent implements OnInit {
         }
       },
       datalabels: {
-        anchor: 'end' as const,
-        align: 'top' as const,
+        anchor: 'center' as const,
+        align: 'center' as const,
         formatter: (value: number) => '$' + value.toFixed(2),
         color: '#000',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 4,
+        padding: 6,
         font: {
           weight: 'bold' as const,
           size: 14
@@ -386,6 +389,9 @@ export class TransactionReportsComponent implements OnInit {
           return `${value}\n(${percentage}%)`;
         },
         color: '#000',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 4,
+        padding: 6,
         font: {
           weight: 'bold' as const,
           size: 16
