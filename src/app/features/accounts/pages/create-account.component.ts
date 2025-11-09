@@ -56,9 +56,12 @@ import { AccountService } from '@core/services/account.service';
   `,
   styles: [`
     .create-account-container {
-      max-width: 500px;
+      max-width: 600px;
       margin: var(--spacing-xl) auto;
       padding: var(--spacing-xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     .form-group {
       margin-bottom: var(--spacing-lg);
@@ -95,7 +98,7 @@ import { AccountService } from '@core/services/account.service';
       font-weight: var(--font-weight-medium);
     }
     .btn-primary {
-      background: var(--color-blue);
+      background: var(--color-success);
       color: var(--color-text-light);
       flex: 1;
     }
