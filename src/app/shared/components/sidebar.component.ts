@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -67,6 +68,20 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
               <line x1="9" y1="15" x2="15" y2="15"/>
             </svg>
             <span class="nav-text">Transacciones Paginado</span>
+          </a>
+        </div>
+
+        <!-- Sección de Administración - TEMPORALMENTE VISIBLE PARA TODOS (REMOVER @if PARA TESTING) -->
+        <div class="nav-section nav-section-divider admin-section">
+          <div class="section-title">Administración</div>
+          <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"/>
+              <path d="M18 17V9"/>
+              <path d="M13 17V5"/>
+              <path d="M8 17v-3"/>
+            </svg>
+            <span class="nav-text">Reportes</span>
           </a>
         </div>
 
@@ -203,6 +218,37 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       white-space: nowrap;
     }
 
+    /* Sección de administración */
+    .admin-section {
+      border-top: 2px solid var(--color-warning);
+      background: linear-gradient(180deg, rgba(255, 193, 7, 0.05) 0%, transparent 100%);
+    }
+
+    .admin-section .section-title {
+      color: var(--color-warning);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .admin-section .nav-item {
+      border-left: 3px solid transparent;
+    }
+
+    .admin-section .nav-item:hover {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--color-warning);
+      border-left: 3px solid var(--color-warning);
+    }
+
+    .admin-section .nav-item.active {
+      background: linear-gradient(90deg, rgba(255, 193, 7, 0.15) 0%, transparent 100%);
+      color: var(--color-warning);
+      border-left: 3px solid var(--color-warning);
+    }
+
+    .admin-section .nav-item.active .nav-icon {
+      color: var(--color-warning);
+    }
+
     @media (max-width: 768px) {
       .sidebar {
         top: 60px;
@@ -216,9 +262,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   `]
 })
 export class SidebarComponent {
+  private authService = inject(AuthService);
+
   isCollapsed = signal(false); // Visible por defecto
 
   toggleSidebar() {
     this.isCollapsed.update(value => !value);
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 }

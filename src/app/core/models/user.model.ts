@@ -28,6 +28,7 @@ export interface AuthResponse {
   type: string;
   email: string;
   name: string;
+  role?: RoleType;
 }
 
 export interface UserResponse {

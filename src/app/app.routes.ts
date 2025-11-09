@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 import { LandingLayoutComponent } from './shared/layouts/landing-layout.component';
 import { AuthLayoutComponent } from './shared/layouts/auth-layout.component';
 
@@ -50,6 +51,11 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadChildren: () => import('./features/profile/profile.routes').then(m => m.PROFILE_ROUTES)
+      },
+      {
+        path: 'reports',
+        // canActivate: [adminGuard], // TEMPORALMENTE DESACTIVADO PARA TESTING
+        loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
       }
     ]
   },

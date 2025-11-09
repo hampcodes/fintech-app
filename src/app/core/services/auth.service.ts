@@ -61,13 +61,12 @@ export class AuthService {
     this.storage.setItem('token', response.token);
     this._token.set(response.token);
 
-    // AuthResponse no incluye role ni otros campos de UserResponse
-    // Creamos un objeto parcial con valores por defecto
+    // AuthResponse incluye role si viene del backend
     const user: UserResponse = {
       id: '', // No disponible desde AuthResponse
       email: response.email,
       name: response.name,
-      role: RoleType.ROLE_USER, // Valor por defecto, actualizar desde backend si es necesario
+      role: response.role || RoleType.ROLE_USER, // Usar el role del response o ROLE_USER por defecto
       active: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -96,5 +95,9 @@ export class AuthService {
 
   getToken(): string | null {
     return this._token();
+  }
+
+  get currentUserValue(): UserResponse | null {
+    return this._currentUser();
   }
 }

@@ -77,13 +77,28 @@ import { LoginRequest } from '@core/models/user.model';
 
           <div class="form-group">
             <label for="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              formControlName="password"
-              class="form-control"
-              placeholder="••••••••"
-              [class.error-input]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <div class="password-input-wrapper">
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                class="form-control password-input"
+                placeholder="••••••••"
+                [class.error-input]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <button type="button" class="toggle-password" (click)="togglePassword()" title="Mostrar/Ocultar contraseña">
+                @if (showPassword()) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
             @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
               <small class="error-message">La contraseña es requerida</small>
             }
@@ -304,6 +319,40 @@ import { LoginRequest } from '@core/models/user.model';
       font-size: 0.95rem;
     }
 
+    .password-input-wrapper {
+      position: relative;
+    }
+
+    .password-input {
+      padding-right: 45px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      transition: var(--transition-base);
+      border-radius: var(--border-radius-sm);
+    }
+
+    .toggle-password:hover {
+      color: var(--color-purple);
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .toggle-password svg {
+      display: block;
+    }
+
     .form-control {
       width: 100%;
       padding: 0.875rem var(--spacing-md);
@@ -484,11 +533,16 @@ export class LoginComponent {
 
   loading = signal(false);
   errorMessage = signal('');
+  showPassword = signal(false);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
+
+  togglePassword() {
+    this.showPassword.update(value => !value);
+  }
 
   onSubmit() {
     if (this.loginForm.valid) {
