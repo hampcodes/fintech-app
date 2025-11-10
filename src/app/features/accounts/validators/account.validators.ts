@@ -49,4 +49,21 @@ export class AccountValidators {
       return currencyPattern.test(control.value.toString()) ? null : { invalidCurrencyFormat: true };
     };
   }
+
+  // Validador para número de cuenta con rango de dígitos configurable
+  static accountNumberRange(minDigits: number = 10, maxDigits: number = 20): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+      const accountPattern = new RegExp(`^[0-9]{${minDigits},${maxDigits}}$`);
+      return accountPattern.test(control.value) ? null : {
+        invalidAccountNumberRange: {
+          minDigits,
+          maxDigits,
+          actual: control.value
+        }
+      };
+    };
+  }
 }

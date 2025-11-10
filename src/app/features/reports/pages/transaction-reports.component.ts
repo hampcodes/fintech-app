@@ -7,6 +7,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ReportService } from '@core/services/report.service';
 import { TransactionByTypeDTO } from '@core/models/report.model';
+import { TransactionValidators } from '../../transactions/validators/transaction.validators';
 
 // Registrar todos los componentes de Chart.js
 Chart.register(...registerables, ChartDataLabels);
@@ -53,6 +54,12 @@ Chart.register(...registerables, ChartDataLabels);
               }
             </button>
           </div>
+
+          @if (filterForm.hasError('dateRangeInvalid') && (filterForm.get('startDate')?.touched || filterForm.get('endDate')?.touched)) {
+            <div class="form-error-full">
+              <small class="error">La fecha de inicio no puede ser mayor a la fecha fin</small>
+            </div>
+          }
         </form>
       </div>
 
@@ -157,6 +164,27 @@ Chart.register(...registerables, ChartDataLabels);
       border: 1px solid var(--color-border-light);
       border-radius: var(--border-radius-sm);
       font-size: var(--font-size-base);
+    }
+    .form-error {
+      display: flex;
+      align-items: center;
+    }
+    .form-error .error {
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-xs);
+    }
+    .form-error-full {
+      grid-column: 1 / -1;
+      background: var(--color-danger-light);
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-sm);
+      border-left: 3px solid var(--color-danger);
+    }
+    .form-error-full .error {
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
     }
     .filter-actions {
       display: flex;
@@ -312,7 +340,7 @@ export class TransactionReportsComponent implements OnInit {
   filterForm: FormGroup = this.fb.group({
     startDate: ['', Validators.required],
     endDate: ['', Validators.required]
-  });
+  }, { validators: TransactionValidators.dateRange('startDate', 'endDate') });
 
   // Configuración gráfico de barras
   barChartType: ChartType = 'bar';

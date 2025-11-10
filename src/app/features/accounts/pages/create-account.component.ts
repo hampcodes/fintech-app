@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '@core/services/account.service';
+import { AccountValidators } from '../validators/account.validators';
 
 @Component({
   selector: 'app-create-account',
@@ -121,7 +122,7 @@ export class CreateAccountComponent {
   errorMessage = signal('');
 
   accountForm: FormGroup = this.fb.group({
-    accountNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,20}$/)]],
+    accountNumber: ['', [Validators.required, AccountValidators.accountNumberRange(10, 20)]],
     initialBalance: [0, [Validators.required, Validators.min(0)]]
   });
 

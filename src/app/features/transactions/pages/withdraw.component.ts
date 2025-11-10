@@ -6,6 +6,7 @@ import { AccountService } from '@core/services/account.service';
 import { TransactionService } from '@core/services/transaction.service';
 import { AccountResponse } from '@core/models/account.model';
 import { TransactionRequest, TransactionType } from '@core/models/transaction.model';
+import { TransactionValidators } from '../validators/transaction.validators';
 
 @Component({
   selector: 'app-withdraw',
@@ -206,20 +207,10 @@ export class WithdrawComponent implements OnInit {
       this.withdrawForm.get('amount')?.setValidators([
         Validators.required,
         Validators.min(0.01),
-        this.insufficientFundsValidator(account.balance)
+        TransactionValidators.sufficientFunds(account.balance)
       ]);
       this.withdrawForm.get('amount')?.updateValueAndValidity();
     }
-  }
-
-  insufficientFundsValidator(balance: number) {
-    return (control: any) => {
-      const amount = control.value;
-      if (amount > balance) {
-        return { insufficientFunds: true };
-      }
-      return null;
-    };
   }
 
   onSubmit() {
