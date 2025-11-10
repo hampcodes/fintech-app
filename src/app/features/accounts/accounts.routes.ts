@@ -6,6 +6,10 @@ export const ACCOUNTS_ROUTES: Routes = [
     loadComponent: () => import('./pages/account-list.component').then(m => m.AccountListComponent)
   },
   {
+    path: 'paginated',
+    loadComponent: () => import('./pages-paginated/accounts-list-paginated.component').then(m => m.AccountsListPaginatedComponent)
+  },
+  {
     path: 'create',
     loadComponent: () => import('./pages/create-account.component').then(m => m.CreateAccountComponent)
   },

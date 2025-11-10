@@ -28,8 +28,8 @@ export class AuthService {
     this.loadAuthData();
   }
 
-  // POST - Login (con objeto)
-  loginWithCredentials(credentials: LoginRequest): Observable<AuthResponse> {
+  // POST - Login
+  login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         this.saveAuthData(response);
@@ -37,23 +37,13 @@ export class AuthService {
     );
   }
 
-  // POST - Login (con parámetros separados)
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.loginWithCredentials({ email, password });
-  }
-
-  // POST - Register (con objeto)
-  registerWithData(data: RegisterRequest): Observable<AuthResponse> {
+  // POST - Register
+  register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
       tap(response => {
         this.saveAuthData(response);
       })
     );
-  }
-
-  // POST - Register (con parámetros separados)
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.registerWithData({ name, email, password });
   }
 
   // Logout
@@ -71,13 +61,12 @@ export class AuthService {
     this.storage.setItem('token', response.token);
     this._token.set(response.token);
 
-    // AuthResponse no incluye role ni otros campos de UserResponse
-    // Creamos un objeto parcial con valores por defecto
+    // AuthResponse incluye role si viene del backend
     const user: UserResponse = {
       id: '', // No disponible desde AuthResponse
       email: response.email,
       name: response.name,
-      role: RoleType.ROLE_USER, // Valor por defecto, actualizar desde backend si es necesario
+      role: response.role || RoleType.ROLE_USER, // Usar el role del response o ROLE_USER por defecto
       active: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -106,5 +95,9 @@ export class AuthService {
 
   getToken(): string | null {
     return this._token();
+  }
+
+  get currentUserValue(): UserResponse | null {
+    return this._currentUser();
   }
 }

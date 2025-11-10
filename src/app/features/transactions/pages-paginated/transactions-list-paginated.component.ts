@@ -4,16 +4,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TransactionService } from '@core/services/transaction.service';
 import { TransactionResponse } from '@core/models/transaction.model';
+import { Page, PageRequest } from '@core/models/page.model';
 import { TransactionValidators } from '../validators/transaction.validators';
 
 @Component({
-  selector: 'app-transaction-list',
+  selector: 'app-transactions-list-paginated',
   standalone: true,
   imports: [CommonModule, RouterLink, ReactiveFormsModule],
   template: `
     <div class="transactions-container">
       <div class="transactions-header">
-        <h2>Historial de Transacciones</h2>
+        <h2>Mis Transacciones (Paginado)</h2>
         <div class="header-actions">
           <a routerLink="/transactions/deposit" class="btn btn-success">Depositar</a>
           <a routerLink="/transactions/withdraw" class="btn btn-warning">Retirar</a>
@@ -56,11 +57,7 @@ import { TransactionValidators } from '../validators/transaction.validators';
 
       @if (loading()) {
         <p>Cargando transacciones...</p>
-      } @else if (transactions().length === 0) {
-        <div class="empty-state">
-          <p>No hay transacciones registradas</p>
-        </div>
-      } @else {
+      } @else if (page()) {
         <div class="transactions-table">
           <table>
             <thead>
@@ -74,7 +71,7 @@ import { TransactionValidators } from '../validators/transaction.validators';
               </tr>
             </thead>
             <tbody>
-              @for (tx of transactions(); track tx.id) {
+              @for (tx of page()!.content; track tx.id) {
                 <tr>
                   <td>{{ tx.timestamp | date:'short' }}</td>
                   <td>{{ tx.accountNumber }}</td>
@@ -93,6 +90,29 @@ import { TransactionValidators } from '../validators/transaction.validators';
             </tbody>
           </table>
         </div>
+
+        <div class="pagination">
+          <button
+            class="btn-page"
+            [disabled]="page()!.first"
+            (click)="goToPage(page()!.number - 1)">
+            Anterior
+          </button>
+
+          <span class="page-info">
+            Página {{ page()!.number + 1 }} de {{ page()!.totalPages }}
+            ({{ page()!.totalElements }} transacciones)
+          </span>
+
+          <button
+            class="btn-page"
+            [disabled]="page()!.last"
+            (click)="goToPage(page()!.number + 1)">
+            Siguiente
+          </button>
+        </div>
+      } @else {
+        <p>No hay transacciones disponibles</p>
       }
     </div>
   `,
@@ -213,10 +233,27 @@ import { TransactionValidators } from '../validators/transaction.validators';
       background: #ffc107;
       color: #000;
     }
-    .empty-state {
-      text-align: center;
-      padding: var(--spacing-3xl);
-      color: var(--color-text-secondary);
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .btn-page {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-page:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .page-info {
+      font-size: 0.875rem;
+      color: #666;
     }
     .filter-error {
       display: flex;
@@ -236,13 +273,18 @@ import { TransactionValidators } from '../validators/transaction.validators';
     }
   `]
 })
-export class TransactionListComponent implements OnInit {
+export class TransactionsListPaginatedComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private fb = inject(FormBuilder);
 
-  allTransactions = signal<TransactionResponse[]>([]);
-  transactions = signal<TransactionResponse[]>([]);
+  page = signal<Page<TransactionResponse> | null>(null);
   loading = signal(true);
+  currentPageRequest: PageRequest = {
+    page: 0,
+    size: 20,
+    sortBy: 'timestamp',
+    sortDir: 'DESC'
+  };
 
   filterForm: FormGroup = this.fb.group({
     startDate: [''],
@@ -255,45 +297,47 @@ export class TransactionListComponent implements OnInit {
 
   loadTransactions() {
     this.loading.set(true);
-    this.transactionService.get().subscribe({
-      next: (data) => {
-        this.allTransactions.set(data);
-        this.transactions.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
-  }
-
-  applyFilters() {
     const startDate = this.filterForm.value.startDate;
     const endDate = this.filterForm.value.endDate;
 
-    if (!startDate && !endDate) {
-      this.transactions.set(this.allTransactions());
-      return;
+    // Si hay filtros de fecha, usar el método de rango de fechas
+    if (startDate && endDate) {
+      this.transactionService.getByDateRangePaginated(startDate, endDate, this.currentPageRequest).subscribe({
+        next: (data) => {
+          this.page.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      });
+    } else {
+      // Sin filtros, cargar todas las transacciones
+      this.transactionService.getPaginated(this.currentPageRequest).subscribe({
+        next: (data) => {
+          this.page.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      });
     }
+  }
 
-    const filtered = this.allTransactions().filter(tx => {
-      const txDate = new Date(tx.timestamp);
-
-      if (startDate && endDate) {
-        return txDate >= new Date(startDate) && txDate <= new Date(endDate);
-      } else if (startDate) {
-        return txDate >= new Date(startDate);
-      } else if (endDate) {
-        return txDate <= new Date(endDate);
-      }
-      return true;
-    });
-
-    this.transactions.set(filtered);
+  applyFilters() {
+    this.currentPageRequest.page = 0; // Reset a primera página
+    this.loadTransactions();
   }
 
   clearFilters() {
     this.filterForm.reset();
-    this.transactions.set(this.allTransactions());
+    this.currentPageRequest.page = 0;
+    this.loadTransactions();
+  }
+
+  goToPage(pageNumber: number) {
+    this.currentPageRequest.page = pageNumber;
+    this.loadTransactions();
   }
 }

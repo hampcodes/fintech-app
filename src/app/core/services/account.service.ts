@@ -1,8 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AccountResponse, AccountRequest } from '../models/account.model';
+import { Page, PageRequest } from '../models/page.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,8 @@ export class AccountService {
   private _accounts = signal<AccountResponse[]>([]);
   accounts = this._accounts.asReadonly();
 
-  // GET - Obtener todas mis cuentas
-  getMyAccounts(): Observable<AccountResponse[]> {
+  // GET - Obtener todas las cuentas
+  get(): Observable<AccountResponse[]> {
     return this.http.get<AccountResponse[]>(this.apiUrl).pipe(
       tap(data => this._accounts.set(data))
     );
@@ -27,25 +28,26 @@ export class AccountService {
     return this.http.get<AccountResponse>(`${this.apiUrl}/${id}`);
   }
 
+  
   // GET - Obtener cuenta por número
-  getByAccountNumber(accountNumber: string): Observable<AccountResponse> {
+  getByNumber(accountNumber: string): Observable<AccountResponse> {
     return this.http.get<AccountResponse>(`${this.apiUrl}/number/${accountNumber}`);
   }
 
-  // GET - Obtener balance (retorna AccountResponse con el campo balance)
-  getBalance(accountNumber: string): Observable<AccountResponse> {
+  // GET - Obtener balance
+  getBalanceByNumber(accountNumber: string): Observable<AccountResponse> {
     return this.http.get<AccountResponse>(`${this.apiUrl}/number/${accountNumber}/balance`);
   }
 
   // GET - Obtener cuentas activas
-  getActiveAccounts(): Observable<AccountResponse[]> {
+  getActive(): Observable<AccountResponse[]> {
     return this.http.get<AccountResponse[]>(`${this.apiUrl}/active`).pipe(
       tap(data => this._accounts.set(data))
     );
   }
 
   // POST - Crear cuenta
-  create(data: AccountRequest): Observable<AccountResponse> {
+  post(data: AccountRequest): Observable<AccountResponse> {
     return this.http.post<AccountResponse>(this.apiUrl, data).pipe(
       tap(newAccount => {
         this._accounts.update(current => [...current, newAccount]);
@@ -54,7 +56,7 @@ export class AccountService {
   }
 
   // PATCH - Activar cuenta
-  activate(id: string): Observable<AccountResponse> {
+  patchActivate(id: string): Observable<AccountResponse> {
     return this.http.patch<AccountResponse>(`${this.apiUrl}/${id}/activate`, {}).pipe(
       tap(updatedAccount => {
         this._accounts.update(current =>
@@ -65,7 +67,7 @@ export class AccountService {
   }
 
   // PATCH - Desactivar cuenta
-  deactivate(id: string): Observable<AccountResponse> {
+  patchDeactivate(id: string): Observable<AccountResponse> {
     return this.http.patch<AccountResponse>(`${this.apiUrl}/${id}/deactivate`, {}).pipe(
       tap(updatedAccount => {
         this._accounts.update(current =>
@@ -75,17 +77,27 @@ export class AccountService {
     );
   }
 
-  // ===== MÉTODOS ALIAS PARA COMPONENTES =====
+  // ===== MÉTODOS CON PAGINACIÓN =====
 
-  getAccounts(): Observable<AccountResponse[]> {
-    return this.getMyAccounts();
+  // GET - Obtener todas las cuentas paginadas
+  getPaginated(pageRequest: PageRequest = {}): Observable<Page<AccountResponse>> {
+    let params = new HttpParams();
+    if (pageRequest.page !== undefined) params = params.set('page', pageRequest.page.toString());
+    if (pageRequest.size !== undefined) params = params.set('size', pageRequest.size.toString());
+    if (pageRequest.sortBy) params = params.set('sortBy', pageRequest.sortBy);
+    if (pageRequest.sortDir) params = params.set('sortDir', pageRequest.sortDir);
+
+    return this.http.get<Page<AccountResponse>>(`${this.apiUrl}/paginated`, { params });
   }
 
-  getAccountById(id: string): Observable<AccountResponse> {
-    return this.getById(id);
-  }
+  // GET - Obtener cuentas activas paginadas
+  getActivePaginated(pageRequest: PageRequest = {}): Observable<Page<AccountResponse>> {
+    let params = new HttpParams();
+    if (pageRequest.page !== undefined) params = params.set('page', pageRequest.page.toString());
+    if (pageRequest.size !== undefined) params = params.set('size', pageRequest.size.toString());
+    if (pageRequest.sortBy) params = params.set('sortBy', pageRequest.sortBy);
+    if (pageRequest.sortDir) params = params.set('sortDir', pageRequest.sortDir);
 
-  createAccount(data: AccountRequest): Observable<AccountResponse> {
-    return this.create(data);
+    return this.http.get<Page<AccountResponse>>(`${this.apiUrl}/paginated/active`, { params });
   }
 }

@@ -4,6 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { RegisterRequest } from '@core/models/user.model';
+import { AuthValidators } from '../validators/auth.validators';
+import { CommonValidators } from '@core/validators/common-validators';
+import { NATIONALITIES } from '@core/constants/nationalities';
 
 @Component({
   selector: 'app-register',
@@ -54,24 +57,30 @@ import { RegisterRequest } from '@core/models/user.model';
             <p>Únete a FinTechApp y empieza a gestionar tus finanzas</p>
           </div>
 
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          <div class="form-grid">
-            <!-- Campos requeridos -->
-            <div class="form-group">
-              <label for="name">Nombre completo <span class="required">*</span></label>
-              <input
-                id="name"
-                type="text"
-                formControlName="name"
-                class="form-control"
-                placeholder="Juan Pérez"
-                [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
-              @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-                <small class="error-message">El nombre completo es requerido</small>
-              }
+          <!-- Stepper -->
+          <div class="stepper">
+            <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
+              <div class="step-number">1</div>
+              <div class="step-label">Cuenta</div>
             </div>
+            <div class="step-line" [class.completed]="currentStep() > 1"></div>
+            <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">
+              <div class="step-number">2</div>
+              <div class="step-label">Datos Personales</div>
+            </div>
+            <div class="step-line" [class.completed]="currentStep() > 2"></div>
+            <div class="step" [class.active]="currentStep() >= 3">
+              <div class="step-number">3</div>
+              <div class="step-label">Información Adicional</div>
+            </div>
+          </div>
 
-            <div class="form-group">
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+          <!-- Paso 1: Datos de Cuenta -->
+          @if (currentStep() === 1) {
+            <div class="form-grid">
+            <div class="form-group full-width">
               <label for="email">Correo electrónico <span class="required">*</span></label>
               <input
                 id="email"
@@ -93,19 +102,60 @@ import { RegisterRequest } from '@core/models/user.model';
 
             <div class="form-group full-width">
               <label for="password">Contraseña <span class="required">*</span></label>
-              <input
-                id="password"
-                type="password"
-                formControlName="password"
-                class="form-control"
-                placeholder="Mínimo 6 caracteres"
-                [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+              <div class="password-input-wrapper">
+                <input
+                  id="password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  formControlName="password"
+                  class="form-control password-input"
+                  placeholder="Mínimo 6 caracteres"
+                  [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                <button type="button" class="toggle-password" (click)="togglePassword()" title="Mostrar/Ocultar contraseña">
+                  @if (showPassword()) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  }
+                </button>
+              </div>
               @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-                <small class="error-message">La contraseña debe tener mínimo 6 caracteres</small>
+                <small class="error-message">
+                  @if (registerForm.get('password')?.errors?.['required']) {
+                    La contraseña es requerida
+                  } @else if (registerForm.get('password')?.errors?.['minlength']) {
+                    La contraseña debe tener al menos 6 caracteres
+                  } @else if (registerForm.get('password')?.errors?.['weakPassword']) {
+                    La contraseña debe contener mayúsculas, minúsculas, números y mínimo 8 caracteres
+                  }
+                </small>
+              }
+            </div>
+            </div>
+          }
+
+          <!-- Paso 2: Datos Personales -->
+          @if (currentStep() === 2) {
+            <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="name">Nombre completo <span class="required">*</span></label>
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                class="form-control"
+                placeholder="Juan Pérez"
+                [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+              @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+                <small class="error-message">El nombre completo es requerido</small>
               }
             </div>
 
-            <!-- Campos opcionales -->
             <div class="form-group">
               <label for="dni">DNI</label>
               <input
@@ -113,7 +163,15 @@ import { RegisterRequest } from '@core/models/user.model';
                 type="text"
                 formControlName="dni"
                 class="form-control"
-                placeholder="12345678">
+                placeholder="12345678"
+                [class.error-input]="registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched">
+              @if (registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched) {
+                <small class="error-message">
+                  @if (registerForm.get('dni')?.errors?.['invalidDni']) {
+                    El DNI debe tener 8 dígitos
+                  }
+                </small>
+              }
             </div>
 
             <div class="form-group">
@@ -123,7 +181,15 @@ import { RegisterRequest } from '@core/models/user.model';
                 type="tel"
                 formControlName="phone"
                 class="form-control"
-                placeholder="+51 999 999 999">
+                placeholder="999999999"
+                [class.error-input]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+              @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+                <small class="error-message">
+                  @if (registerForm.get('phone')?.errors?.['invalidPhone']) {
+                    El teléfono debe tener 9 dígitos
+                  }
+                </small>
+              }
             </div>
 
             <div class="form-group">
@@ -132,17 +198,33 @@ import { RegisterRequest } from '@core/models/user.model';
                 id="dateOfBirth"
                 type="date"
                 formControlName="dateOfBirth"
-                class="form-control">
-            </div>
-
-            <div class="form-group">
-              <label for="nationality">Nacionalidad</label>
-              <input
-                id="nationality"
-                type="text"
-                formControlName="nationality"
                 class="form-control"
-                placeholder="Peruana">
+                [class.error-input]="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched">
+              @if (registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched) {
+                <small class="error-message">
+                  @if (registerForm.get('dateOfBirth')?.errors?.['minAge']) {
+                    Debes ser mayor de 18 años
+                  }
+                </small>
+              }
+            </div>
+            </div>
+          }
+
+          <!-- Paso 3: Información Adicional -->
+          @if (currentStep() === 3) {
+            <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="nationality">Nacionalidad</label>
+              <select
+                id="nationality"
+                formControlName="nationality"
+                class="form-control">
+                <option value="">Selecciona tu nacionalidad</option>
+                @for (nationality of nationalities; track nationality) {
+                  <option [value]="nationality">{{ nationality }}</option>
+                }
+              </select>
             </div>
 
             <div class="form-group full-width">
@@ -164,7 +246,8 @@ import { RegisterRequest } from '@core/models/user.model';
                 class="form-control"
                 placeholder="Ingeniero, Contador, Estudiante, etc.">
             </div>
-          </div>
+            </div>
+          }
 
           @if (errorMessage()) {
             <div class="alert alert-error">
@@ -173,14 +256,31 @@ import { RegisterRequest } from '@core/models/user.model';
             </div>
           }
 
-          <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || loading()">
-            @if (loading()) {
-              <span class="spinner"></span>
-              <span>Creando cuenta...</span>
-            } @else {
-              <span>Crear cuenta</span>
+          <!-- Botones de navegación -->
+          <div class="step-buttons">
+            @if (currentStep() > 1) {
+              <button type="button" class="btn-secondary" (click)="previousStep()">
+                ← Anterior
+              </button>
             }
-          </button>
+
+            @if (currentStep() < 3) {
+              <button type="button" class="btn-primary" (click)="nextStep()">
+                Siguiente →
+              </button>
+            }
+
+            @if (currentStep() === 3) {
+              <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || loading()">
+                @if (loading()) {
+                  <span class="spinner"></span>
+                  <span>Creando cuenta...</span>
+                } @else {
+                  <span>Crear cuenta</span>
+                }
+              </button>
+            }
+          </div>
 
           <div class="divider">
             <span>o</span>
@@ -195,22 +295,12 @@ import { RegisterRequest } from '@core/models/user.model';
     </div>
   `,
   styles: [`
-    :host {
-      --color-primary: #003D7A;
-      --color-secondary: #00A859;
-      --color-light: #F5F5F5;
-      --color-white: #FFFFFF;
-      --color-error: #dc3545;
-      --color-text: #333333;
-      --color-text-light: #666666;
-    }
-
     .register-container {
       min-height: calc(100vh - 200px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1rem;
+      padding: var(--spacing-xl) var(--spacing-md);
     }
 
     .register-wrapper {
@@ -218,7 +308,7 @@ import { RegisterRequest } from '@core/models/user.model';
       grid-template-columns: 1fr 1fr;
       max-width: 1400px;
       width: 100%;
-      gap: 3rem;
+      gap: var(--spacing-3xl);
       align-items: center;
     }
 
@@ -227,7 +317,7 @@ import { RegisterRequest } from '@core/models/user.model';
       align-items: center;
       justify-content: center;
       position: relative;
-      padding: 2rem;
+      padding: var(--spacing-xl);
     }
 
     .image-content {
@@ -275,48 +365,48 @@ import { RegisterRequest } from '@core/models/user.model';
     }
 
     .success-badge {
-      background: white;
-      padding: 2.5rem 2rem;
-      border-radius: 20px;
+      background: var(--color-background-light);
+      padding: 2.5rem var(--spacing-xl);
+      border-radius: var(--border-radius-2xl);
       box-shadow: 0 20px 50px rgba(0, 168, 89, 0.25);
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
       border: 3px solid var(--color-secondary);
     }
 
     .badge-check {
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, var(--color-secondary) 0%, #00c96d 100%);
-      color: white;
-      border-radius: 50%;
+      background: var(--gradient-success);
+      color: var(--color-text-light);
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
       flex-shrink: 0;
     }
 
     .badge-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin-bottom: 0.25rem;
+      margin-bottom: var(--spacing-xs);
     }
 
     .badge-subtitle {
-      font-size: 1rem;
+      font-size: var(--font-size-base);
       color: var(--color-secondary);
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
     }
 
     .features-list {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
+      background: var(--color-background-light);
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-xl);
       box-shadow: 0 10px 30px rgba(0, 61, 122, 0.15);
       display: flex;
       flex-direction: column;
@@ -326,53 +416,151 @@ import { RegisterRequest } from '@core/models/user.model';
     .feature-item {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: var(--spacing-md);
       font-size: 1.1rem;
-      color: var(--color-text);
-      font-weight: 500;
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
     }
 
     .feature-check {
       width: 28px;
       height: 28px;
       background: var(--color-secondary);
-      color: white;
-      border-radius: 50%;
+      color: var(--color-text-light);
+      border-radius: var(--border-radius-round);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       flex-shrink: 0;
     }
 
     .register-card {
       width: 100%;
       max-width: 750px;
-      background: var(--color-white);
-      border-radius: 20px;
-      box-shadow: 0 15px 50px rgba(0, 61, 122, 0.15);
-      padding: 3rem 2.5rem;
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-2xl);
+      box-shadow: var(--shadow-xl);
+      padding: var(--spacing-3xl) 2.5rem;
     }
 
     .register-header {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Stepper Styles */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 0 0 auto;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-gray-light);
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-base);
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background: var(--color-secondary);
+      color: var(--color-text-light);
+      box-shadow: 0 4px 12px rgba(0, 168, 89, 0.3);
+    }
+
+    .step.completed .step-number {
+      background: var(--color-success);
+      color: var(--color-text-light);
+    }
+
+    .step-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-medium);
+      text-align: center;
+    }
+
+    .step.active .step-label {
+      color: var(--color-secondary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .step.completed .step-label {
+      color: var(--color-success);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--color-border-light);
+      margin: 0 0.5rem;
+      position: relative;
+      top: -15px;
+    }
+
+    .step-line.completed {
+      background: var(--color-success);
+    }
+
+    .step-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+
+    .step-buttons .btn-secondary {
+      flex: 1;
+      background: var(--color-gray);
+      color: var(--color-text-light);
+      padding: var(--spacing-md);
+      border: none;
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .step-buttons .btn-secondary:hover {
+      background: var(--color-gray-dark);
+    }
+
+    .step-buttons .btn-primary {
+      flex: 1;
     }
 
     .logo-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
+      font-size: var(--font-size-3xl);
+      margin-bottom: var(--spacing-md);
     }
 
     .register-header h1 {
       font-size: 1.875rem;
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       color: var(--color-primary);
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 var(--spacing-sm) 0;
     }
 
     .register-header p {
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       margin: 0;
       font-size: 0.95rem;
     }
@@ -381,7 +569,7 @@ import { RegisterRequest } from '@core/models/user.model';
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1.25rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
 
     .form-group {
@@ -395,23 +583,57 @@ import { RegisterRequest } from '@core/models/user.model';
 
     label {
       display: block;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: 0.5rem;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-sm);
       font-size: 0.9rem;
     }
 
     .required {
-      color: var(--color-error);
+      color: var(--color-danger);
+    }
+
+    .password-input-wrapper {
+      position: relative;
+    }
+
+    .password-input {
+      padding-right: 45px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      transition: var(--transition-base);
+      border-radius: var(--border-radius-sm);
+    }
+
+    .toggle-password:hover {
+      color: var(--color-secondary);
+      background: rgba(0, 168, 89, 0.1);
+    }
+
+    .toggle-password svg {
+      display: block;
     }
 
     .form-control {
       width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
+      padding: 0.75rem var(--spacing-md);
+      border: 2px solid var(--color-border-light);
+      border-radius: var(--border-radius-lg);
       font-size: 0.95rem;
-      transition: all 0.3s ease;
+      transition: var(--transition-base);
       box-sizing: border-box;
     }
 
@@ -422,11 +644,11 @@ import { RegisterRequest } from '@core/models/user.model';
     }
 
     .form-control::placeholder {
-      color: #aaa;
+      color: var(--color-text-muted);
     }
 
     .error-input {
-      border-color: var(--color-error);
+      border-color: var(--color-danger);
     }
 
     .error-input:focus {
@@ -435,24 +657,24 @@ import { RegisterRequest } from '@core/models/user.model';
 
     .error-message {
       display: block;
-      color: var(--color-error);
-      font-size: 0.8rem;
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
       margin-top: 0.4rem;
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
     }
 
     .alert {
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-lg);
+      margin-bottom: var(--spacing-lg);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--spacing-sm);
     }
 
     .alert-error {
-      background: #fee;
-      color: var(--color-error);
+      background: var(--color-danger-light);
+      color: var(--color-danger);
       border: 1px solid #fcc;
     }
 
@@ -462,23 +684,23 @@ import { RegisterRequest } from '@core/models/user.model';
 
     .btn-primary {
       width: 100%;
-      padding: 1rem;
+      padding: var(--spacing-md);
       background: var(--color-secondary);
-      color: var(--color-white);
+      color: var(--color-text-light);
       border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: var(--transition-base);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: var(--spacing-sm);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #00c96d;
+      background: var(--color-secondary-light);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 168, 89, 0.3);
     }
@@ -492,9 +714,9 @@ import { RegisterRequest } from '@core/models/user.model';
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid var(--color-white);
+      border: 2px solid var(--color-text-light);
       border-top-color: transparent;
-      border-radius: 50%;
+      border-radius: var(--border-radius-round);
       animation: spin 0.6s linear infinite;
     }
 
@@ -504,7 +726,7 @@ import { RegisterRequest } from '@core/models/user.model';
 
     .divider {
       text-align: center;
-      margin: 2rem 0;
+      margin: var(--spacing-xl) 0;
       position: relative;
     }
 
@@ -515,7 +737,7 @@ import { RegisterRequest } from '@core/models/user.model';
       top: 50%;
       width: 45%;
       height: 1px;
-      background: #e0e0e0;
+      background: var(--color-border-light);
     }
 
     .divider::before {
@@ -527,15 +749,15 @@ import { RegisterRequest } from '@core/models/user.model';
     }
 
     .divider span {
-      background: var(--color-white);
-      padding: 0 1rem;
-      color: var(--color-text-light);
+      background: var(--color-background-light);
+      padding: 0 var(--spacing-md);
+      color: var(--color-text-secondary);
       font-size: 0.9rem;
     }
 
     .login-link {
       text-align: center;
-      color: var(--color-text-light);
+      color: var(--color-text-secondary);
       margin: 0;
       font-size: 0.95rem;
     }
@@ -543,12 +765,12 @@ import { RegisterRequest } from '@core/models/user.model';
     .login-link a {
       color: var(--color-secondary);
       text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
+      font-weight: var(--font-weight-semibold);
+      transition: var(--transition-base);
     }
 
     .login-link a:hover {
-      color: #00c96d;
+      color: var(--color-secondary-light);
       text-decoration: underline;
     }
 
@@ -573,7 +795,7 @@ import { RegisterRequest } from '@core/models/user.model';
       }
 
       .register-card {
-        padding: 2rem 1.5rem;
+        padding: var(--spacing-xl) var(--spacing-lg);
       }
 
       .register-header h1 {
@@ -589,20 +811,86 @@ export class RegisterComponent {
 
   loading = signal(false);
   errorMessage = signal('');
+  showPassword = signal(false);
+  nationalities = NATIONALITIES;
+  currentStep = signal(1);
 
   registerForm: FormGroup = this.fb.group({
     // Campos requeridos
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    name: ['', Validators.required],
-    // Campos opcionales
-    phone: [''],
-    dni: [''],
+    password: ['', [Validators.required, Validators.minLength(6), AuthValidators.strongPassword()]],
+    name: ['', [Validators.required, Validators.minLength(3), AuthValidators.fullName()]],
+    // Campos opcionales con validaciones
+    phone: ['', [CommonValidators.phone(9)]],
+    dni: ['', [AuthValidators.peruvianDNI()]],
     address: [''],
-    dateOfBirth: [''],
+    dateOfBirth: ['', [CommonValidators.minAge(18)]],
     nationality: [''],
     occupation: ['']
   });
+
+  nextStep() {
+    // Validar campos del paso actual antes de avanzar
+    if (!this.validateCurrentStep()) {
+      this.markStepFieldsAsTouched();
+      return;
+    }
+
+    if (this.currentStep() < 3) {
+      this.currentStep.set(this.currentStep() + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  validateCurrentStep(): boolean {
+    const step = this.currentStep();
+
+    if (step === 1) {
+      // Paso 1: Validar email y password
+      const email = this.registerForm.get('email');
+      const password = this.registerForm.get('password');
+      return (email?.valid ?? false) && (password?.valid ?? false);
+    } else if (step === 2) {
+      // Paso 2: Validar nombre (requerido)
+      const name = this.registerForm.get('name');
+      // Los demás campos son opcionales pero deben ser válidos si tienen valor
+      const dni = this.registerForm.get('dni');
+      const phone = this.registerForm.get('phone');
+      const dateOfBirth = this.registerForm.get('dateOfBirth');
+
+      return (name?.valid ?? false) &&
+             (dni?.value === '' || (dni?.valid ?? true)) &&
+             (phone?.value === '' || (phone?.valid ?? true)) &&
+             (dateOfBirth?.value === '' || (dateOfBirth?.valid ?? true));
+    }
+
+    return true; // Paso 3 no tiene campos requeridos
+  }
+
+  markStepFieldsAsTouched() {
+    const step = this.currentStep();
+
+    if (step === 1) {
+      this.registerForm.get('email')?.markAsTouched();
+      this.registerForm.get('password')?.markAsTouched();
+    } else if (step === 2) {
+      this.registerForm.get('name')?.markAsTouched();
+      this.registerForm.get('dni')?.markAsTouched();
+      this.registerForm.get('phone')?.markAsTouched();
+      this.registerForm.get('dateOfBirth')?.markAsTouched();
+    }
+  }
+
+  previousStep() {
+    if (this.currentStep() > 1) {
+      this.currentStep.set(this.currentStep() - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  togglePassword() {
+    this.showPassword.update(value => !value);
+  }
 
   onSubmit() {
     if (this.registerForm.valid) {
@@ -623,11 +911,11 @@ export class RegisterComponent {
         occupation: formData.occupation || undefined
       };
 
-      this.authService.registerWithData(registerData).subscribe({
+      this.authService.register(registerData).subscribe({
         next: () => {
-          this.router.navigate(['/accounts']);
+          this.router.navigate(['/dashboard']);
         },
-        error: (error) => {
+        error: () => {
           this.errorMessage.set('Error al registrar usuario. Por favor, verifica tus datos.');
           this.loading.set(false);
         }

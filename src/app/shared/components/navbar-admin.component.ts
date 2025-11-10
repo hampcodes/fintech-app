@@ -1,25 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar-admin',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   template: `
     <nav class="navbar">
       <div class="navbar-brand">
-        <a routerLink="/admin">FinTech Admin</a>
+        <span class="logo-icon">👑</span>
+        <a routerLink="/dashboard">FinTech Admin</a>
       </div>
-
-      <ul class="navbar-menu">
-        <li><a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a></li>
-        <li><a routerLink="/admin/users" routerLinkActive="active">Usuarios</a></li>
-        <li><a routerLink="/admin/accounts" routerLinkActive="active">Cuentas</a></li>
-        <li><a routerLink="/admin/transactions" routerLinkActive="active">Transacciones</a></li>
-        <li><a routerLink="/admin/settings" routerLinkActive="active">Configuración</a></li>
-      </ul>
 
       <div class="navbar-user">
         <span class="admin-badge">ADMIN</span>
@@ -30,6 +23,10 @@ import { AuthService } from '../../core/services/auth.service';
   `,
   styles: [`
     .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -37,6 +34,18 @@ import { AuthService } from '../../core/services/auth.service';
       color: white;
       padding: 1rem 2rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1001;
+      height: 64px;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      font-size: 2rem;
     }
 
     .navbar-brand a {
@@ -44,26 +53,6 @@ import { AuthService } from '../../core/services/auth.service';
       font-weight: bold;
       color: white;
       text-decoration: none;
-    }
-
-    .navbar-menu {
-      display: flex;
-      gap: 1.5rem;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .navbar-menu a {
-      color: white;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-
-    .navbar-menu a:hover, .navbar-menu a.active {
-      background: rgba(255, 255, 255, 0.2);
     }
 
     .navbar-user {
@@ -92,11 +81,27 @@ import { AuthService } from '../../core/services/auth.service';
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.3s;
+      font-weight: 500;
     }
 
     .btn-logout:hover {
       background: white;
       color: #f5576c;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0.75rem 1rem;
+        height: 60px;
+      }
+
+      .navbar-brand a {
+        font-size: 1.25rem;
+      }
+
+      .user-name {
+        display: none;
+      }
     }
   `]
 })

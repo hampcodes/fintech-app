@@ -56,52 +56,55 @@ import { AccountService } from '@core/services/account.service';
   `,
   styles: [`
     .create-account-container {
-      max-width: 500px;
-      margin: 2rem auto;
-      padding: 2rem;
+      max-width: 600px;
+      margin: var(--spacing-xl) auto;
+      padding: var(--spacing-xl);
+      background: var(--color-background-light);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
     }
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-base);
     }
     .error {
-      color: red;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+      color: var(--color-danger);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-xs);
       display: block;
     }
     .alert-error {
       padding: 0.75rem;
-      background: #f8d7da;
-      color: #721c24;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-md);
     }
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: var(--spacing-md);
     }
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem var(--spacing-lg);
+      border-radius: var(--border-radius-sm);
       border: none;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
     }
     .btn-primary {
-      background: #007bff;
-      color: white;
+      background: var(--color-success);
+      color: var(--color-text-light);
       flex: 1;
     }
     .btn-secondary {
-      background: #6c757d;
-      color: white;
+      background: var(--color-gray);
+      color: var(--color-text-light);
     }
     .btn:disabled {
       opacity: 0.6;
@@ -127,7 +130,7 @@ export class CreateAccountComponent {
       this.loading.set(true);
       this.errorMessage.set('');
 
-      this.accountService.createAccount(this.accountForm.value).subscribe({
+      this.accountService.post(this.accountForm.value).subscribe({
         next: () => {
           this.router.navigate(['/accounts']);
         },

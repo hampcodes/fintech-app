@@ -6,6 +6,10 @@ export const TRANSACTIONS_ROUTES: Routes = [
     loadComponent: () => import('./pages/transaction-list.component').then(m => m.TransactionListComponent)
   },
   {
+    path: 'paginated',
+    loadComponent: () => import('./pages-paginated/transactions-list-paginated.component').then(m => m.TransactionsListPaginatedComponent)
+  },
+  {
     path: 'deposit',
     loadComponent: () => import('./pages/deposit.component').then(m => m.DepositComponent)
   },
