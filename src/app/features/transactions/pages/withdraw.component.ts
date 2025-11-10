@@ -170,7 +170,7 @@ import { TransactionRequest, TransactionType } from '@core/models/transaction.mo
     }
   `]
 })
-export class WithdrawComponent implements OnInit {
+export class WithdrawComponent  {
   private fb = inject(FormBuilder);
   private accountService = inject(AccountService);
   private transactionService = inject(TransactionService);

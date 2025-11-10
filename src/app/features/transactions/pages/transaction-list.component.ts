@@ -236,7 +236,7 @@ import { TransactionValidators } from '../validators/transaction.validators';
     }
   `]
 })
-export class TransactionListComponent implements OnInit {
+export class TransactionListComponent  {
   private transactionService = inject(TransactionService);
   private fb = inject(FormBuilder);
 

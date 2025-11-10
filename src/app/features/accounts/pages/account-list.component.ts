@@ -186,7 +186,7 @@ import { AccountResponse } from '@core/models/account.model';
     }
   `]
 })
-export class AccountListComponent implements OnInit {
+export class AccountListComponent  {
   private accountService = inject(AccountService);
   private fb = inject(FormBuilder);
 

@@ -160,7 +160,7 @@ import { TransactionResponse } from '@core/models/transaction.model';
     }
   `]
 })
-export class AccountDetailComponent implements OnInit {
+export class AccountDetailComponent  {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private accountService = inject(AccountService);
