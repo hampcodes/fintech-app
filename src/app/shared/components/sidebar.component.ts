@@ -50,6 +50,55 @@ import { AuthService } from '@core/services/auth.service';
         </div>
 
         <div class="nav-section nav-section-divider">
+          <div class="section-title">Tienda</div>
+          <a routerLink="/shop/catalog" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-text">Catálogo</span>
+          </a>
+
+          <a routerLink="/shop/cart" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-text">Carrito</span>
+          </a>
+
+          <a routerLink="/shop/orders" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            </svg>
+            <span class="nav-text">Mis Órdenes</span>
+          </a>
+        </div>
+
+        @if (isAdmin()) {
+          <div class="nav-section nav-section-divider admin-section">
+            <div class="section-title">Administración Tienda</div>
+            <a routerLink="/shop/admin/categories" routerLinkActive="active" class="nav-item">
+              <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16v16H4z"/>
+                <path d="M4 10h16M10 4v16"/>
+              </svg>
+              <span class="nav-text">Gestionar Categorías</span>
+            </a>
+
+            <a routerLink="/shop/admin/products" routerLinkActive="active" class="nav-item">
+              <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              <span class="nav-text">Gestionar Productos</span>
+            </a>
+          </div>
+        }
+
+        <div class="nav-section nav-section-divider">
           <div class="section-title">Vistas Paginadas</div>
           <a routerLink="/accounts/paginated" routerLinkActive="active" class="nav-item">
             <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

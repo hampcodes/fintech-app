@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AccountService } from '@core/services/account.service';
 import { TransactionService } from '@core/services/transaction.service';
+import { AuthService } from '@core/services/auth.service';
 import { AccountResponse } from '@core/models/account.model';
 import { TransactionResponse } from '@core/models/transaction.model';
 
@@ -12,7 +13,13 @@ import { TransactionResponse } from '@core/models/transaction.model';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard-container">
-      <h1>Panel de Control</h1>
+      <div class="welcome-section">
+        <div>
+          <h1>{{ isAdmin() ? 'Panel de Administración' : 'Bienvenido' }}</h1>
+          <p class="subtitle">{{ currentUserName() }}</p>
+        </div>
+        <a routerLink="/dashboard" class="btn-home">🏠 Inicio</a>
+      </div>
 
       <div class="stats-grid">
         <div class="stat-card">
@@ -112,36 +119,37 @@ import { TransactionResponse } from '@core/models/transaction.model';
       <!-- Quick Actions -->
       <div class="actions-card">
         <h2>Acciones Rápidas</h2>
-        <div class="action-buttons">
-          <button class="action-btn primary" routerLink="/accounts/create">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Nueva Cuenta
-          </button>
-          <button class="action-btn success" routerLink="/transactions/deposit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="19" x2="12" y2="5"/>
-              <polyline points="5 12 12 5 19 12"/>
-            </svg>
-            Realizar Depósito
-          </button>
-          <button class="action-btn warning" routerLink="/transactions/withdraw">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <polyline points="19 12 12 19 5 12"/>
-            </svg>
-            Realizar Retiro
-          </button>
-          <button class="action-btn info" routerLink="/accounts">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-            </svg>
-            Ver Cuentas
-          </button>
-        </div>
+        @if (isAdmin()) {
+          <div class="action-buttons">
+            <button class="action-btn admin" routerLink="/shop/admin/categories">
+              📂 Gestionar Categorías
+            </button>
+            <button class="action-btn admin" routerLink="/shop/admin/products">
+              📦 Gestionar Productos
+            </button>
+            <button class="action-btn primary" routerLink="/accounts/create">
+              ➕ Nueva Cuenta
+            </button>
+            <button class="action-btn info" routerLink="/reports">
+              📊 Ver Reportes
+            </button>
+          </div>
+        } @else {
+          <div class="action-buttons">
+            <button class="action-btn primary" routerLink="/shop/catalog">
+              🛒 Ir al Catálogo
+            </button>
+            <button class="action-btn success" routerLink="/transactions/deposit">
+              💰 Realizar Depósito
+            </button>
+            <button class="action-btn warning" routerLink="/transactions/withdraw">
+              💸 Realizar Retiro
+            </button>
+            <button class="action-btn info" routerLink="/accounts">
+              💳 Ver Mis Cuentas
+            </button>
+          </div>
+        }
       </div>
     </div>
   `,
@@ -152,9 +160,37 @@ import { TransactionResponse } from '@core/models/transaction.model';
       margin: 0 auto;
     }
 
-    h1 {
+    .welcome-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: var(--spacing-xl);
+    }
+
+    .welcome-section h1 {
+      margin: 0;
       color: var(--color-text-primary);
+    }
+
+    .subtitle {
+      color: var(--color-text-secondary);
+      margin: var(--spacing-xs) 0 0 0;
+      font-size: var(--font-size-lg);
+    }
+
+    .btn-home {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background: var(--color-primary);
+      color: var(--color-text-light);
+      text-decoration: none;
+      border-radius: var(--border-radius-md);
+      font-weight: var(--font-weight-medium);
+      transition: var(--transition-base);
+    }
+
+    .btn-home:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
     }
 
     .stats-grid {
@@ -365,6 +401,12 @@ import { TransactionResponse } from '@core/models/transaction.model';
       color: var(--color-text-light);
     }
 
+    .action-btn.admin {
+      background: var(--color-warning);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-bold);
+    }
+
     @media (max-width: 768px) {
       .dashboard-container {
         padding: var(--spacing-md);
@@ -383,6 +425,7 @@ import { TransactionResponse } from '@core/models/transaction.model';
 export class DashboardComponent implements OnInit {
   private accountService = inject(AccountService);
   private transactionService = inject(TransactionService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   accounts = signal<AccountResponse[]>([]);
@@ -391,6 +434,9 @@ export class DashboardComponent implements OnInit {
   totalBalance = signal(0);
   recentAccounts = signal<AccountResponse[]>([]);
   recentTransactions = signal<TransactionResponse[]>([]);
+
+  isAdmin = computed(() => this.authService.isAdmin());
+  currentUserName = computed(() => this.authService.currentUser()?.name || 'Usuario');
 
   ngOnInit() {
     this.loadData();

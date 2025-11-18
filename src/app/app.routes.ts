@@ -56,6 +56,10 @@ export const routes: Routes = [
         path: 'reports',
         // canActivate: [adminGuard], // TEMPORALMENTE DESACTIVADO PARA TESTING
         loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
+      },
+      {
+        path: 'shop',
+        loadChildren: () => import('./features/shop/shop.routes').then(m => m.SHOP_ROUTES)
       }
     ]
   },
