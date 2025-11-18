@@ -1,5 +1,5 @@
 // Environment - Configuración para desarrollo
 export const environment = {
   production: false,
-  apiUrl: 'https://api.fintech.com/api/v1'
+  apiUrl: 'https://fintech-api-fpxs.onrender.com/api/v1'
 };
